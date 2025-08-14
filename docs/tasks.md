@@ -66,6 +66,41 @@ These optional but recommended tasks tighten quality gates before large Phase 2 
 
 ---
 
+## Phase 1 Completion Summary (Added v1.0 Close-Out)
+
+Status: ALL Phase 1 core tasks (T-001–T-015) and bridge hardening tasks (T-016–T-019) are COMPLETE.
+
+### Evidence Snapshot
+
+- Lint: passes with zero warnings (strict ESLint scope limited to `apps/*/src` & `packages/*/src`).
+- Typecheck: `pnpm typecheck` succeeds (project references updated for new packages `@budget/config`, `@budget/test-utils`).
+- Tests: All unit & integration tests green (auth, tokens, groups, API endpoints, logging, config schema, desktop preload, web auth flow, test-utils placeholder).
+- Electron Smoke: CI step launches packaged desktop build and validates `desktop.didFinishLoad` event.
+- OpenAPI Spec: Enhanced with `servers`, `tags`, `operationId`, descriptions; Spectral lint passes (T-017) and CI step added.
+- Config Schema: `@budget/config` validates env (JWT secret length, TTLs); invalid scenario test included (T-018).
+- Developer Guide: `docs/developer-guide.md` created with scripts, troubleshooting, and contributor onboarding (T-019).
+- Logging & Error Handling: Structured JSON logs with traceId; standardized error shape validated by integration test (T-014, T-015).
+
+### Notable Adjustments During Close-Out
+
+- Introduced `@budget/test-utils` but trimmed scope to avoid circular build; helpers provide request utilities without owning server construction.
+- Added minimal tests for packages lacking coverage (logging, config, test-utils) to keep global test run fully green.
+- Added Spectral config `.spectral.json` and build/dump script (`tools/openapi-dump.cjs`) plus `spec:lint` script; spec now enriched to meet lint rules.
+- Centralized configuration moved from inline constants in `server.ts` to `@budget/config` with cached load and test reset.
+
+### Current Technical Debt / Follow-Ups (Pre-Phase 2)
+
+- Test-utils could later re-introduce a context builder once API evolves (avoid re-adding circular dependency).
+- Refresh token reuse detection still deferred (not in Phase 1 scope) – slated for future security enhancement.
+- OpenAPI schemas are still simplified (no detailed error component schemas); expand when Phase 2 adds new domains.
+- Consider pruning committed generated files (`openapi.generated.json`, `.spectral-report.json`) or mark them in `.gitignore` if not required as artifacts.
+
+### Readiness for Phase 2
+
+The codebase is stable with baseline auth, group management, logging, config validation, and CI quality gates. Ready to proceed to Phase 2 Task T-020 (Aggregator decision ADR) without prerequisite gaps.
+
+---
+
 ## Phase 2: Accounts & Transactions (Months 2–4)
 
 ### Goal Exit Criteria
