@@ -43,10 +43,13 @@ apps/desktop/dist/
 husky-debug.log
 
 # Hidden dot directories (generic) -- allowlist essential tracked configs
-.*/*
+# Hidden dot directories (selective allowlist)
 !.github/
 !.husky/
 !.vscode/
+
+# Tool caches
+.eslintcache
 
 # Additional common tool/build caches
 .next/

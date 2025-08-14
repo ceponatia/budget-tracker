@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import request, { type Response as SupertestResponse } from 'supertest';
 import { createServer } from '../server.js';
+import { logger, type LogRecord } from '@budget/logging';
 import type { GroupInvite } from '@budget/domain';
 
 // Typed shapes of API responses (derive minimal needed parts)
@@ -38,7 +39,7 @@ function parseJson<T>(res: SupertestResponse): T {
 
 // Integration tests for T-009 endpoints
 
-describe('API (T-009)', () => {
+describe('API (T-009, T-014, T-015)', () => {
   const app = createServer();
   let refreshToken = '';
   let accessToken = '';
@@ -61,6 +62,20 @@ describe('API (T-009)', () => {
     const body = parseJson<RefreshResponse>(res);
     expect(body.refreshToken).not.toBe(refreshToken);
     refreshToken = body.refreshToken;
+  });
+
+  it('login invalid credentials returns standardized error shape', async () => {
+    const res = await request(app)
+      .post('/auth/login')
+      .send({ email: 'missing@example.com', password: 'WrongPassword123!' });
+    interface ErrShape {
+      error: { code: string };
+      traceId: string;
+    }
+    const body = res.body as unknown as ErrShape;
+    expect(res.status).toBe(401);
+    expect(body.error.code).toBe('INVALID_CREDENTIALS');
+    expect(typeof body.traceId).toBe('string');
   });
 
   it('creates group with auth', async () => {
@@ -90,5 +105,17 @@ describe('API (T-009)', () => {
     const spec = parseJson<{ openapi: string; paths: Record<string, unknown> }>(res);
     expect(spec.openapi).toMatch(/^3\.1/);
     expect(spec.paths['/auth/register']).toBeTruthy();
+  });
+
+  it('emits structured log entries with traceId', async () => {
+    const before = logger.testBuffer.length;
+    const res = await request(app).get('/openapi.json');
+    expect(res.status).toBe(200);
+    const after = logger.testBuffer.length;
+    expect(after).toBeGreaterThan(before);
+    const recent: LogRecord[] = logger.testBuffer.slice(-3); // last few entries
+    expect(recent.some((r) => r.msg === 'request.start')).toBe(true);
+    expect(recent.some((r) => r.msg === 'request.end')).toBe(true);
+    expect(recent.every((r) => typeof r.traceId === 'string')).toBe(true);
   });
 });

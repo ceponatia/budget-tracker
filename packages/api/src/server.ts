@@ -1,15 +1,64 @@
 // API server entry (T-009)
 // Purpose: Express app exposing auth & group endpoints.
-// eslint-disable-next-line import/no-named-as-default-member -- express default import is intentional
-import express, { Request, Response, NextFunction } from 'express';
+// Use namespace import to satisfy import plugin rule & preserve types
+// eslint-disable-next-line import/no-named-as-default-member -- false positive in some configs
+import * as express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { AuthService, InMemoryUserRepository } from '@budget/auth';
 import { TokenService, InMemoryRefreshTokenRepository, verifyAccessToken } from '@budget/tokens';
 import { GroupService } from '@budget/groups';
 import { openApiSpec } from './openapi.js';
+import { logger, newTraceId } from '@budget/logging';
 
-const app = express();
+// AppError & helpers (T-015)
+class AppError extends Error {
+  constructor(
+    public code: string,
+    public httpStatus: number,
+    message?: string,
+  ) {
+    super(message ?? code);
+  }
+}
+function hasCode(value: unknown): value is { code: string } {
+  if (typeof value !== 'object' || value === null || !('code' in value)) return false;
+  return typeof (value as { code: unknown }).code === 'string';
+}
+function toAppError(e: unknown, fallback: AppError): AppError {
+  if (e instanceof AppError) return e;
+  if (e instanceof Error && hasCode(e)) {
+    return new AppError((e as { code: string }).code, fallback.httpStatus, e.message);
+  }
+  return fallback;
+}
+
+const app = express.default();
 app.use(express.json());
+
+// Logging + trace (T-014)
+interface TraceRequest extends Request {
+  traceId?: string;
+  log?: ReturnType<typeof logger.child>;
+  userId?: string;
+}
+app.use((req: TraceRequest, _res, next) => {
+  const traceId = newTraceId();
+  req.traceId = traceId;
+  req.log = logger.child({ traceId });
+  const start = Date.now();
+  req.log.info('request.start', { method: req.method, url: req.url });
+  _res.on('finish', () => {
+    const dur = Date.now() - start;
+    req.log?.info('request.end', {
+      method: req.method,
+      url: req.url,
+      status: _res.statusCode,
+      durMs: dur,
+    });
+  });
+  next();
+});
 
 // In-memory singletons (replace with real persistence later)
 const userRepo = new InMemoryUserRepository();
@@ -29,10 +78,10 @@ const refreshSchema = z.object({ refreshToken: z.string().min(10) });
 const createGroupSchema = z.object({ name: z.string().min(1) });
 const inviteSchema = z.object({ invitedEmail: z.string().email() });
 
-function authMiddleware(req: Request & { userId?: string }, res: Response, next: NextFunction) {
+function authMiddleware(req: TraceRequest, _res: Response, next: NextFunction) {
   const hdr = req.headers.authorization;
   if (!hdr?.startsWith('Bearer ')) {
-    res.status(401).json({ error: 'UNAUTHORIZED' });
+    next(new AppError('UNAUTHORIZED', 401));
     return;
   }
   const token = hdr.slice(7);
@@ -42,7 +91,7 @@ function authMiddleware(req: Request & { userId?: string }, res: Response, next:
       req.userId = userId;
       next();
     } catch (_err: unknown) {
-      res.status(401).json({ error: 'UNAUTHORIZED' });
+      next(new AppError('UNAUTHORIZED', 401));
     }
   })();
 }
@@ -69,18 +118,13 @@ app.post(
   '/auth/register',
   wrap(async (req: Request, res: Response) => {
     const parsed = registrationSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'INVALID_INPUT', issues: parsed.error.issues });
-      return;
-    }
+    if (!parsed.success) throw new AppError('INVALID_INPUT', 400, 'Invalid registration input');
     try {
       const { user } = await authService.register(parsed.data);
       const tokens = await tokenService.issueSession(user);
       res.status(201).json({ user, ...tokens });
     } catch (e: unknown) {
-      const code =
-        typeof e === 'object' && e && 'code' in e ? (e as { code?: string }).code : undefined;
-      res.status(400).json({ error: code ?? 'REGISTRATION_FAILED' });
+      throw toAppError(e, new AppError('REGISTRATION_FAILED', 400));
     }
   }),
 );
@@ -89,18 +133,13 @@ app.post(
   '/auth/login',
   wrap(async (req: Request, res: Response) => {
     const parsed = loginSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'INVALID_INPUT' });
-      return;
-    }
+    if (!parsed.success) throw new AppError('INVALID_INPUT', 400, 'Invalid login input');
     try {
       const { user } = await authService.login(parsed.data);
       const tokens = await tokenService.issueSession(user);
       res.json({ user, ...tokens });
     } catch (e: unknown) {
-      const code =
-        typeof e === 'object' && e && 'code' in e ? (e as { code?: string }).code : undefined;
-      res.status(401).json({ error: code ?? 'INVALID_CREDENTIALS' });
+      throw toAppError(e, new AppError('INVALID_CREDENTIALS', 401));
     }
   }),
 );
@@ -109,15 +148,12 @@ app.post(
   '/auth/refresh',
   wrap(async (req: Request, res: Response) => {
     const parsed = refreshSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'INVALID_INPUT' });
-      return;
-    }
+    if (!parsed.success) throw new AppError('INVALID_INPUT', 400, 'Invalid refresh input');
     try {
       const tokens = await tokenService.refresh(parsed.data.refreshToken);
       res.json(tokens);
     } catch (_e: unknown) {
-      res.status(401).json({ error: 'INVALID_REFRESH' });
+      throw new AppError('INVALID_REFRESH', 401);
     }
   }),
 );
@@ -125,12 +161,9 @@ app.post(
 app.post(
   '/groups',
   authMiddleware,
-  wrap<Request & { userId: string }>(async (req, res) => {
+  wrap<TraceRequest & { userId: string }>(async (req, res) => {
     const parsed = createGroupSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'INVALID_INPUT' });
-      return;
-    }
+    if (!parsed.success) throw new AppError('INVALID_INPUT', 400, 'Invalid group input');
     const { group } = await groupService.createGroup({
       name: parsed.data.name,
       ownerUserId: req.userId,
@@ -142,12 +175,9 @@ app.post(
 app.post(
   '/groups/:id/invite',
   authMiddleware,
-  wrap<Request & { userId: string }>(async (req, res) => {
+  wrap<TraceRequest & { userId: string }>(async (req, res) => {
     const parsed = inviteSchema.safeParse(req.body);
-    if (!parsed.success) {
-      res.status(400).json({ error: 'INVALID_INPUT' });
-      return;
-    }
+    if (!parsed.success) throw new AppError('INVALID_INPUT', 400, 'Invalid invite input');
     try {
       const groupId = req.params.id ?? '';
       const invite = await groupService.issueInvite({
@@ -156,7 +186,7 @@ app.post(
       });
       res.status(201).json({ invite });
     } catch (_e: unknown) {
-      res.status(400).json({ error: 'INVITE_FAILED' });
+      throw new AppError('INVITE_FAILED', 400);
     }
   }),
 );
@@ -165,10 +195,24 @@ export function createServer(): express.Express {
   return app;
 }
 
+// Error handling middleware (after routes)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: unknown, req: TraceRequest, res: Response, _next: NextFunction) => {
+  const traceId = req.traceId;
+  const log = req.log ?? logger.child({ traceId });
+  const appErr = toAppError(err, new AppError('INTERNAL_ERROR', 500));
+  if (appErr.httpStatus >= 500) {
+    log.error('request.error', err as Error, { code: appErr.code });
+  } else {
+    log.warn('request.error', { code: appErr.code });
+  }
+  res.status(appErr.httpStatus).json({ error: { code: appErr.code }, traceId });
+});
+
 if (process.env.NODE_ENV !== 'test') {
   const raw = process.env.PORT;
   const port: number = raw ? Number(raw) : 3000;
   app.listen(port, () => {
-    console.log(`API listening on :${String(port)}`);
+    logger.child().info('api.start', { port });
   });
 }

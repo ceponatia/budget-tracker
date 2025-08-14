@@ -15,6 +15,7 @@
     "@budget/domain": "workspace:*",
     "@budget/groups": "workspace:*",
     "@budget/tokens": "workspace:*",
+    "@budget/logging": "workspace:*",
     "express": "^4.19.0",
     "zod": "^3.23.8"
   },

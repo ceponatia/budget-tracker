@@ -4,7 +4,9 @@
     { "path": "packages/domain" },
     { "path": "packages/auth" },
     { "path": "packages/tokens" },
-    { "path": "packages/groups" }
-  ,{ "path": "packages/api" }
+    { "path": "packages/groups" },
+    { "path": "packages/api" },
+    { "path": "packages/logging" },
+    { "path": "apps/desktop" }
   ]
 }
