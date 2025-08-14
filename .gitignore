@@ -41,3 +41,19 @@ apps/desktop/dist/
 
 # Misc
 husky-debug.log
+
+# Hidden dot directories (generic) -- allowlist essential tracked configs
+.*/*
+!.github/
+!.husky/
+!.vscode/
+
+# Additional common tool/build caches
+.next/
+.turbo/
+.cache/
+.parcel-cache/
+.vite/
+.nyc_output/
+.coverage/
+
