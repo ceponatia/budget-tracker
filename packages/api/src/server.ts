@@ -1,9 +1,9 @@
 // API server entry (T-009)
 // Purpose: Express app exposing auth & group endpoints.
+// eslint-disable-next-line import/no-named-as-default-member -- express default import is intentional
 import express, { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { AuthService } from '@budget/auth';
-import { InMemoryUserRepository } from '@budget/auth';
+import { AuthService, InMemoryUserRepository } from '@budget/auth';
 import { TokenService, InMemoryRefreshTokenRepository, verifyAccessToken } from '@budget/tokens';
 import { GroupService } from '@budget/groups';
 
@@ -14,7 +14,10 @@ app.use(express.json());
 const userRepo = new InMemoryUserRepository();
 const refreshRepo = new InMemoryRefreshTokenRepository();
 const tokenSecret = new TextEncoder().encode('dev-secret-change');
-const tokenService = new TokenService(tokenSecret, refreshRepo, { accessTtlSec: 900, refreshTtlSec: 60 * 60 * 24 });
+const tokenService = new TokenService(tokenSecret, refreshRepo, {
+  accessTtlSec: 900,
+  refreshTtlSec: 60 * 60 * 24,
+});
 const authService = new AuthService(userRepo);
 const groupService = new GroupService();
 
@@ -27,70 +30,141 @@ const inviteSchema = z.object({ invitedEmail: z.string().email() });
 
 function authMiddleware(req: Request & { userId?: string }, res: Response, next: NextFunction) {
   const hdr = req.headers.authorization;
-  if (!hdr?.startsWith('Bearer ')) return res.status(401).json({ error: 'UNAUTHORIZED' });
+  if (!hdr?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'UNAUTHORIZED' });
+    return;
+  }
   const token = hdr.slice(7);
-  verifyAccessToken(tokenSecret, token)
-    .then(({ userId }) => { req.userId = userId; next(); })
-    .catch(() => res.status(401).json({ error: 'UNAUTHORIZED' }));
+  void (async () => {
+    try {
+      const { userId } = await verifyAccessToken(tokenSecret, token);
+      req.userId = userId;
+      next();
+    } catch (_err: unknown) {
+      res.status(401).json({ error: 'UNAUTHORIZED' });
+    }
+  })();
+}
+
+// Small helper to wrap async handlers so we do not return a promise directly to Express.
+type AsyncHandler<Req extends Request = Request> = (
+  req: Req,
+  res: Response,
+  next: NextFunction,
+) => Promise<void>;
+function wrap<Req extends Request>(handler: AsyncHandler<Req>) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    void (handler as AsyncHandler)(req as Req, res, next).catch((err: unknown) => {
+      next(err as Error);
+    });
+  };
 }
 
 // Routes
-app.post('/auth/register', async (req: Request, res: Response) => {
-  const parsed = registrationSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: 'INVALID_INPUT', issues: parsed.error.issues });
-  try {
-    const { user } = await authService.register(parsed.data);
-    const tokens = await tokenService.issueSession(user);
-    res.status(201).json({ user, ...tokens });
-  } catch (e) {
-    res.status(400).json({ error: (e as any).code ?? 'REGISTRATION_FAILED' });
-  }
-});
+app.post(
+  '/auth/register',
+  wrap(async (req: Request, res: Response) => {
+    const parsed = registrationSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'INVALID_INPUT', issues: parsed.error.issues });
+      return;
+    }
+    try {
+      const { user } = await authService.register(parsed.data);
+      const tokens = await tokenService.issueSession(user);
+      res.status(201).json({ user, ...tokens });
+    } catch (e: unknown) {
+      const code =
+        typeof e === 'object' && e && 'code' in e ? (e as { code?: string }).code : undefined;
+      res.status(400).json({ error: code ?? 'REGISTRATION_FAILED' });
+    }
+  }),
+);
 
-app.post('/auth/login', async (req: Request, res: Response) => {
-  const parsed = loginSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: 'INVALID_INPUT' });
-  try {
-    const { user } = await authService.login(parsed.data);
-    const tokens = await tokenService.issueSession(user);
-    res.json({ user, ...tokens });
-  } catch (e) {
-    res.status(401).json({ error: (e as any).code ?? 'INVALID_CREDENTIALS' });
-  }
-});
+app.post(
+  '/auth/login',
+  wrap(async (req: Request, res: Response) => {
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'INVALID_INPUT' });
+      return;
+    }
+    try {
+      const { user } = await authService.login(parsed.data);
+      const tokens = await tokenService.issueSession(user);
+      res.json({ user, ...tokens });
+    } catch (e: unknown) {
+      const code =
+        typeof e === 'object' && e && 'code' in e ? (e as { code?: string }).code : undefined;
+      res.status(401).json({ error: code ?? 'INVALID_CREDENTIALS' });
+    }
+  }),
+);
 
-app.post('/auth/refresh', async (req: Request, res: Response) => {
-  const parsed = refreshSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: 'INVALID_INPUT' });
-  try {
-    const tokens = await tokenService.refresh(parsed.data.refreshToken);
-    res.json(tokens);
-  } catch (e) {
-    res.status(401).json({ error: 'INVALID_REFRESH' });
-  }
-});
+app.post(
+  '/auth/refresh',
+  wrap(async (req: Request, res: Response) => {
+    const parsed = refreshSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'INVALID_INPUT' });
+      return;
+    }
+    try {
+      const tokens = await tokenService.refresh(parsed.data.refreshToken);
+      res.json(tokens);
+    } catch (_e: unknown) {
+      res.status(401).json({ error: 'INVALID_REFRESH' });
+    }
+  }),
+);
 
-app.post('/groups', authMiddleware, async (req: Request & { userId: string }, res: Response) => {
-  const parsed = createGroupSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: 'INVALID_INPUT' });
-  const { group } = await groupService.createGroup({ name: parsed.data.name, ownerUserId: req.userId });
-  res.status(201).json({ group });
-});
+app.post(
+  '/groups',
+  authMiddleware,
+  wrap<Request & { userId: string }>(async (req, res) => {
+    const parsed = createGroupSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'INVALID_INPUT' });
+      return;
+    }
+    const { group } = await groupService.createGroup({
+      name: parsed.data.name,
+      ownerUserId: req.userId,
+    });
+    res.status(201).json({ group });
+  }),
+);
 
-app.post('/groups/:id/invite', authMiddleware, async (req: Request & { userId: string }, res: Response) => {
-  const parsed = inviteSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ error: 'INVALID_INPUT' });
-  try {
-    const invite = await groupService.issueInvite({ groupId: req.params.id, invitedEmail: parsed.data.invitedEmail });
-    res.status(201).json({ invite });
-  } catch (e) {
-    res.status(400).json({ error: 'INVITE_FAILED' });
-  }
-});
+app.post(
+  '/groups/:id/invite',
+  authMiddleware,
+  wrap<Request & { userId: string }>(async (req, res) => {
+    const parsed = inviteSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'INVALID_INPUT' });
+      return;
+    }
+    try {
+      const groupId = req.params.id ?? '';
+      const invite = await groupService.issueInvite({
+        groupId,
+        invitedEmail: parsed.data.invitedEmail,
+      });
+      res.status(201).json({ invite });
+    } catch (_e: unknown) {
+      res.status(400).json({ error: 'INVITE_FAILED' });
+    }
+  }),
+);
 
-export function createServer() { return app; }
+export function createServer(): express.Express {
+  return app;
+}
 
 if (process.env.NODE_ENV !== 'test') {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => console.log(`API listening on :${port}`));
+  const raw = process.env.PORT;
+  const port: number = raw ? Number(raw) : 3000;
+  app.listen(port, () => {
+    console.log(`API listening on :${String(port)}`);
+  });
 }

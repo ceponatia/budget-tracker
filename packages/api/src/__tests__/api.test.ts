@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../server.js';
@@ -6,10 +7,14 @@ import { createServer } from '../server.js';
 
 describe('API (T-009)', () => {
   const app = createServer();
-  let refreshToken: string; let accessToken: string; let groupId: string;
+  let refreshToken = '';
+  let accessToken = '';
+  let groupId = '';
 
   it('registers user and returns tokens', async () => {
-    const res = await request(app).post('/auth/register').send({ email: 'user1@example.com', password: 'StrongPassw0rd!' });
+    const res = await request(app)
+      .post('/auth/register')
+      .send({ email: 'user1@example.com', password: 'StrongPassw0rd!' });
     expect(res.status).toBe(201);
     expect(res.body.accessToken).toBeTruthy();
     refreshToken = res.body.refreshToken;
@@ -24,13 +29,19 @@ describe('API (T-009)', () => {
   });
 
   it('creates group with auth', async () => {
-    const res = await request(app).post('/groups').set('Authorization', `Bearer ${accessToken}`).send({ name: 'MyGroup' });
+    const res = await request(app)
+      .post('/groups')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: 'MyGroup' });
     expect(res.status).toBe(201);
     groupId = res.body.group.id;
   });
 
   it('issues invite', async () => {
-    const res = await request(app).post(`/groups/${groupId}/invite`).set('Authorization', `Bearer ${accessToken}`).send({ invitedEmail: 'invitee@example.com' });
+    const res = await request(app)
+      .post(`/groups/${groupId}/invite`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ invitedEmail: 'invitee@example.com' });
     expect(res.status).toBe(201);
     expect(res.body.invite.token).toBeTruthy();
   });
