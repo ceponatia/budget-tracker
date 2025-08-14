@@ -9,10 +9,18 @@ export const openApiSpec = {
     version: '0.0.1',
     description: 'Auth and group management endpoints (stub spec)',
   },
+  servers: [{ url: 'http://localhost:3000', description: 'Local development' }],
+  tags: [
+    { name: 'auth', description: 'Authentication & session endpoints' },
+    { name: 'groups', description: 'Group lifecycle & invites' },
+  ],
   paths: {
     '/auth/register': {
       post: {
+        operationId: 'authRegister',
         summary: 'Register a new user',
+        description: 'Creates a new user account and returns initial access + refresh tokens.',
+        tags: ['auth'],
         requestBody: {
           required: true,
           content: {
@@ -41,7 +49,10 @@ export const openApiSpec = {
     },
     '/auth/login': {
       post: {
+        operationId: 'authLogin',
         summary: 'Login existing user',
+        description: 'Authenticates a user with email/password returning rotated tokens.',
+        tags: ['auth'],
         requestBody: { $ref: '#/components/requestBodies/LoginRequest' },
         responses: {
           '200': {
@@ -56,7 +67,10 @@ export const openApiSpec = {
     },
     '/auth/refresh': {
       post: {
+        operationId: 'authRefresh',
         summary: 'Refresh access/refresh token pair',
+        description: 'Rotates refresh token and issues new short-lived access token.',
+        tags: ['auth'],
         requestBody: { $ref: '#/components/requestBodies/RefreshRequest' },
         responses: {
           '200': {
@@ -69,7 +83,10 @@ export const openApiSpec = {
     },
     '/groups': {
       post: {
+        operationId: 'createGroup',
         summary: 'Create a group',
+        description: 'Creates a new group owned by the authenticated user.',
+        tags: ['groups'],
         security: [{ bearerAuth: [] }],
         requestBody: { $ref: '#/components/requestBodies/CreateGroupRequest' },
         responses: {
@@ -86,7 +103,10 @@ export const openApiSpec = {
     },
     '/groups/{id}/invite': {
       post: {
+        operationId: 'issueGroupInvite',
         summary: 'Issue group invite',
+        description: 'Issues an invite token for another user to join the specified group.',
+        tags: ['groups'],
         security: [{ bearerAuth: [] }],
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
         requestBody: { $ref: '#/components/requestBodies/InviteRequest' },
