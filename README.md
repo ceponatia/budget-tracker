@@ -37,8 +37,8 @@ Initialized pnpm workspace (T-002). Root `pnpm-workspace.yaml` defines package g
 
 ## Next Steps
 
-Phase 1 tasks progressed through T-011 (Electron shell). Current task T-012 adds CI (workflow present at `.github/workflows/ci.yml`). Upcoming: T-013 security baseline doc, T-014 structured logging, T-015 error handling.
+Phase 1 tasks complete through T-015 (Foundations). Post-phase 1 hardening tasks (T-016–T-019) added: test utilities, OpenAPI lint, config schema, developer guide.
 
 ---
 
-Initial scaffold created for T-001; workspace config added T-002.
+Initial scaffold created for T-001; workspace config added T-002. See `docs/developer-guide.md` for detailed contributor instructions.

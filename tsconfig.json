@@ -1,12 +1,16 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/domain" },
-    { "path": "packages/auth" },
-    { "path": "packages/tokens" },
-    { "path": "packages/groups" },
-    { "path": "packages/api" },
-    { "path": "packages/logging" },
+  { "path": "packages/domain" },
+  { "path": "packages/provider" },
+  { "path": "packages/vault" },
+  { "path": "packages/auth" },
+  { "path": "packages/tokens" },
+  { "path": "packages/groups" },
+  { "path": "packages/logging" },
+  { "path": "packages/config" },
+  { "path": "packages/test-utils" },
+  { "path": "packages/api" },
     { "path": "apps/desktop" }
   ]
 }

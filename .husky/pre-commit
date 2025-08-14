@@ -1,4 +1,3 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
+# Husky v9+: no husky.sh sourcing needed
 pnpm lint-staged

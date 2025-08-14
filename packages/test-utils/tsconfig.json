@@ -12,12 +12,6 @@
   "include": ["src"],
   "exclude": ["dist", "node_modules"],
   "references": [
-    { "path": "../auth" },
-    { "path": "../tokens" },
-    { "path": "../groups" },
-    { "path": "../logging" },
-  { "path": "../domain" },
-  { "path": "../config" },
-  { "path": "../test-utils" }
+    { "path": "../logging" }
   ]
 }

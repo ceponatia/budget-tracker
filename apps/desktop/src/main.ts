@@ -27,8 +27,17 @@ async function createWindow(): Promise<void> {
     show: false,
   });
 
+  win.webContents.once('did-finish-load', () => {
+    // Structured log to stdout for smoke tests
+    // Using console.log intentionally (main process instrumentation)
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify({ event: 'desktop.didFinishLoad', url: win.webContents.getURL() }));
+  });
+
   win.on('ready-to-show', () => {
     win.show();
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify({ event: 'desktop.readyToShow' }));
   });
 
   if (isDev) {

@@ -15,11 +15,13 @@
     "@budget/domain": "workspace:*",
     "@budget/groups": "workspace:*",
     "@budget/tokens": "workspace:*",
+  "@budget/config": "workspace:*",
     "@budget/logging": "workspace:*",
     "express": "^4.19.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+  "@budget/test-utils": "workspace:*",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.10",
     "@types/supertest": "^6.0.3",

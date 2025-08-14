@@ -7,6 +7,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { AuthService, InMemoryUserRepository } from '@budget/auth';
 import { TokenService, InMemoryRefreshTokenRepository, verifyAccessToken } from '@budget/tokens';
+import { loadConfig } from '@budget/config';
 import { GroupService } from '@budget/groups';
 import { openApiSpec } from './openapi.js';
 import { logger, newTraceId } from '@budget/logging';
@@ -63,10 +64,11 @@ app.use((req: TraceRequest, _res, next) => {
 // In-memory singletons (replace with real persistence later)
 const userRepo = new InMemoryUserRepository();
 const refreshRepo = new InMemoryRefreshTokenRepository();
-const tokenSecret = new TextEncoder().encode('dev-secret-change');
+const cfg = loadConfig();
+const tokenSecret = cfg.secrets.jwtSecret;
 const tokenService = new TokenService(tokenSecret, refreshRepo, {
-  accessTtlSec: 900,
-  refreshTtlSec: 60 * 60 * 24,
+  accessTtlSec: cfg.numeric.accessTtlSec,
+  refreshTtlSec: cfg.numeric.refreshTtlSec,
 });
 const authService = new AuthService(userRepo);
 const groupService = new GroupService();
@@ -210,8 +212,7 @@ app.use((err: unknown, req: TraceRequest, res: Response, _next: NextFunction) =>
 });
 
 if (process.env.NODE_ENV !== 'test') {
-  const raw = process.env.PORT;
-  const port: number = raw ? Number(raw) : 3000;
+  const port: number = cfg.PORT;
   app.listen(port, () => {
     logger.child().info('api.start', { port });
   });

@@ -1,0 +1,10 @@
+{
+  "extends": ["spectral:oas"],
+  "rules": {
+    "info-contact": "off",
+    "contact-properties": "off",
+    "openapi-tags": "warn",
+    "operation-description": "warn",
+    "operation-operationId": "error"
+  }
+}

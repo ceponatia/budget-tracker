@@ -95,6 +95,12 @@ Status: ALL Phase 1 core tasks (T-001–T-015) and bridge hardening tasks (T-016
 - OpenAPI schemas are still simplified (no detailed error component schemas); expand when Phase 2 adds new domains.
 - Consider pruning committed generated files (`openapi.generated.json`, `.spectral-report.json`) or mark them in `.gitignore` if not required as artifacts.
 
+Scheduling Resolution (mapped to future tasks):
+- Context builder: now scheduled as T-039.
+- Refresh token reuse detection: scheduled as T-040.
+- OpenAPI component/schema expansion: scheduled as T-041 (with final polish in existing T-093).
+- Generated spec artifact pruning: scheduled as T-042.
+
 ### Readiness for Phase 2
 
 The codebase is stable with baseline auth, group management, logging, config validation, and CI quality gates. Ready to proceed to Phase 2 Task T-020 (Aggregator decision ADR) without prerequisite gaps.
@@ -109,10 +115,10 @@ Link bank via aggregator sandbox, pull transactions, store & list with basic fil
 
 | ID    | Task                                                            | Type  | Dependencies | Deliverable                  | Validation                            |
 | ----- | --------------------------------------------------------------- | ----- | ------------ | ---------------------------- | ------------------------------------- |
-| T-020 | Choose initial aggregator (decision record)                     | SEC   | T-013        | ADR in `docs/adr/`           | ADR merged, referenced                |
-| T-021 | Aggregator abstraction interface (ProviderAdapter)              | BE    | T-020        | Interface + mock impl        | Unit tests with mock provider         |
-| T-022 | Plaid/Stripe sandbox client integration (token exchange)        | BE    | T-021        | Provider module + env config | Sandbox token exchange test           |
-| T-023 | Secure storage (encrypted) for access tokens                    | BE    | T-022        | Vault service + migration    | Stored ciphertext differs from plain  |
+| T-020 | Choose initial aggregator (decision record)                     | SEC   | T-013        | ADR in `docs/adr/` (ADR-0001) | ADR merged, referenced                |
+| T-021 | Aggregator abstraction interface (ProviderAdapter)              | BE    | T-020        | Interface + mock impl (DONE) | Unit tests with mock provider (passing) |
+| T-022 | Plaid/Stripe sandbox client integration (token exchange)        | BE    | T-021        | Provider module + env config (DONE) | Sandbox token exchange test (mocked Plaid adapter) |
+| T-023 | Secure storage (encrypted) for access tokens                    | BE    | T-022        | Vault service + migration (DONE)   | Stored ciphertext differs from plain (vault test) |
 | T-024 | Link flow frontend (launch widget, receive public token)        | FE    | T-022        | UI component + state         | Manual sandbox link success           |
 | T-025 | Accounts ingestion + persistence (/accounts sync)               | BE    | T-022        | Endpoint + mapping tests     | Account list matches provider sandbox |
 | T-026 | Nightly sync job skeleton (scheduler + placeholder)             | BE    | T-025        | Worker process script        | Cron trigger dry-run log              |
@@ -128,6 +134,10 @@ Link bank via aggregator sandbox, pull transactions, store & list with basic fil
 | T-036 | Performance baseline tests (transaction list, budget dashboard) | QA    | T-029, T-035 | Scripted load test           | P95 timings recorded < targets        |
 | T-037 | OpenAPI/Swagger doc generation & publish route                  | BE    | T-028        | Swagger config file          | Spec accessible at /docs              |
 | T-038 | Access control regression tests (transactions isolation)        | QA    | T-028        | Test suite                   | Unauthorized access 403               |
+| T-039 | Test-utils context builder (shared setup, seeded user/group)    | QA    | T-028        | Extended helpers + docs      | Existing integration tests refactored to use builder (LOC reduction) |
+| T-040 | Refresh token reuse detection & invalidation logic              | SEC   | T-007        | Token guard + tests          | Reusing old refresh token triggers session invalidation test          |
+| T-041 | OpenAPI component/schema expansion (Error, Account, Txn, Paging)| BE/DOC| T-028        | Expanded spec components     | Spectral lint passes; endpoints reference new components              |
+| T-042 | Generated spec artifact pruning & CI artifact publish           | INF   | T-017        | .gitignore + CI upload step  | `git status` clean after build; spec downloadable from CI             |
 
 ### Phase 2 Exit Validation
 

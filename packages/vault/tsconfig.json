@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@budget/config": ["../config/src/index.ts"]
+    }
+  },
+  "references": [ { "path": "../config" } ],
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}

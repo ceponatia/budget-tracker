@@ -27,8 +27,8 @@ Replay Mitigation: Future (Phase 2+) will add reuse detection -> session purge.
 
 | Item                   | Handling                                               |
 | ---------------------- | ------------------------------------------------------ |
-| JWT Secret             | 32+ bytes random; dev placeholder only                 |
-| Argon2 Params          | Configurable via env (future config schema T-018)      |
+| JWT Secret             | 32+ bytes random; dev placeholder only (schema enforces length) |
+| Argon2 Params          | Configurable via env (validated via config schema T-018) |
 | DB / API Keys          | `.env` local only; not committed; injected in CI/CD    |
 | Electron Build Secrets | Not embedded in renderer; preload only whitelists APIs |
 

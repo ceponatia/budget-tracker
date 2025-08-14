@@ -44,6 +44,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Build API & Config (for spec + config checks)
+        run: pnpm --filter @budget/api build && pnpm --filter @budget/config build
+
+      - name: OpenAPI Lint (T-017)
+        run: pnpm spec:lint
+
+      - name: Config Schema Check (T-018)
+        run: pnpm config:check
+
       - name: Unit & Integration Tests
         run: pnpm test
 
