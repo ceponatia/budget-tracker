@@ -47,6 +47,22 @@ jobs:
       - name: Unit & Integration Tests
         run: pnpm test
 
+      - name: Electron Smoke (desktop didFinishLoad)
+        if: >-
+          contains(github.event.pull_request.head.ref, 'desktop') ||
+          contains(github.event.pull_request.title || '', '[desktop]') ||
+          contains(toJson(github.event.pull_request.changed_files || ''), 'apps/desktop/') ||
+          github.ref == 'refs/heads/main'
+        run: |
+          echo "::group::Electron smoke build"
+          pnpm --filter @budget/web build
+          pnpm --filter @budget/desktop build
+          echo "::endgroup::"
+          # Run electron for a short window and capture structured events
+          node -e "const {spawn}=require('child_process');const p=spawn('npx',['electron','apps/desktop/dist/main.js'],{stdio:['ignore','pipe','pipe'],env:{...process.env,NODE_ENV:'production'}});let gotLoad=false,gotShow=false; p.stdout.on('data',d=>{const s=d.toString().trim(); if(s.includes('desktop.didFinishLoad')){ gotLoad=true; echoEvent('didFinishLoad',s);} if(s.includes('desktop.readyToShow')){ gotShow=true; echoEvent('readyToShow',s);} function echoEvent(ev,msg){console.log('SMOKE_EVENT:'+ev+' '+msg);} }); setTimeout(()=>{ if(!gotLoad){console.error('Smoke fail: didFinishLoad not observed'); process.exit(1);} if(!gotShow){console.error('Smoke warn: readyToShow not observed (may be headless)'); } p.kill('SIGTERM'); },8000);" > electron-smoke.log 2>&1 || echo "Smoke script exited"
+          grep -q 'desktop.didFinishLoad' electron-smoke.log || (echo 'Missing desktop.didFinishLoad marker' && cat electron-smoke.log && exit 1)
+          echo 'Electron smoke passed'
+
       - name: Upload test artifacts (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
@@ -57,3 +73,4 @@ jobs:
             **/junit*.xml
             lint*.out
             *.log
+            electron-smoke.log
