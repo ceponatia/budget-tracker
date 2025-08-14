@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { AuthService, InMemoryUserRepository } from '@budget/auth';
 import { TokenService, InMemoryRefreshTokenRepository, verifyAccessToken } from '@budget/tokens';
 import { GroupService } from '@budget/groups';
+import { openApiSpec } from './openapi.js';
 
 const app = express();
 app.use(express.json());
@@ -61,6 +62,9 @@ function wrap<Req extends Request>(handler: AsyncHandler<Req>) {
 }
 
 // Routes
+app.get('/openapi.json', (_req: Request, res: Response) => {
+  res.json(openApiSpec);
+});
 app.post(
   '/auth/register',
   wrap(async (req: Request, res: Response) => {

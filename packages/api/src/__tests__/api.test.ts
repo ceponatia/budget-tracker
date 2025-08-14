@@ -83,4 +83,12 @@ describe('API (T-009)', () => {
     const body = parseJson<InviteResponse>(res);
     expect(body.invite.token.length).toBeGreaterThan(5);
   });
+
+  it('serves openapi spec', async () => {
+    const res = await request(app).get('/openapi.json');
+    expect(res.status).toBe(200);
+    const spec = parseJson<{ openapi: string; paths: Record<string, unknown> }>(res);
+    expect(spec.openapi).toMatch(/^3\.1/);
+    expect(spec.paths['/auth/register']).toBeTruthy();
+  });
 });
