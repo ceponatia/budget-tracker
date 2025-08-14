@@ -1,0 +1,211 @@
+
+> budgetpro-monorepo@0.0.0 lint /home/brian/projects/budget
+> eslint . --ext .ts,.tsx --max-warnings=0
+
+
+/home/brian/projects/budget/packages/auth/src/__tests__/auth.service.test.ts
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   1:1   warning  There should be at least one empty line between import groups        import/order
+   1:38  error    Unable to resolve path to module 'vitest'                            import/no-unresolved
+   2:40  error    Unable to resolve path to module '../repository.js'                  import/no-unresolved
+   3:29  error    Unable to resolve path to module '../service.js'                     import/no-unresolved
+   4:97  error    Unable to resolve path to module '../errors.js'                      import/no-unresolved
+  20:12  error    Forbidden non-null assertion                                         @typescript-eslint/no-non-null-assertion
+  21:12  error    Forbidden non-null assertion                                         @typescript-eslint/no-non-null-assertion
+
+/home/brian/projects/budget/packages/auth/src/index.ts
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/export
+  2:15  error  Unable to resolve path to module './errors.js'                       import/no-unresolved
+  3:15  error  Unable to resolve path to module './repository.js'                   import/no-unresolved
+  4:15  error  Unable to resolve path to module './service.js'                      import/no-unresolved
+
+/home/brian/projects/budget/packages/auth/src/repository.ts
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   3:32  error    Unable to resolve path to module '@budget/domain'                    import/no-unresolved
+  17:3   error    Async method 'findByEmail' has no 'await' expression                 @typescript-eslint/require-await
+  21:3   error    Async method 'create' has no 'await' expression                      @typescript-eslint/require-await
+
+/home/brian/projects/budget/packages/auth/src/service.ts
+   1:1    error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1    error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1    error    Resolve error: typescript with invalid interface loaded as resolver  import/default
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-named-as-default
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-named-as-default-member
+   4:20   error    Unable to resolve path to module 'argon2'                            import/no-unresolved
+   5:1    warning  There should be at least one empty line between import groups        import/order
+   5:22   error    Unable to resolve path to module '@budget/domain'                    import/no-unresolved
+   6:33   error    Unable to resolve path to module './repository.js'                   import/no-unresolved
+   7:108  error    Unable to resolve path to module './errors.js'                       import/no-unresolved
+  36:11   error    Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  36:27   warning  '_omitted' is assigned a value but never used                        @typescript-eslint/no-unused-vars
+  36:59   error    Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  37:14   error    Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  46:11   error    Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  46:27   warning  '_omitted' is assigned a value but never used                        @typescript-eslint/no-unused-vars
+  46:59   error    Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  47:14   error    Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+
+/home/brian/projects/budget/packages/domain/src/__tests__/types.test.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:1   warning  There should be at least one empty line between import groups        import/order
+  1:38  error    Unable to resolve path to module 'vitest'                            import/no-unresolved
+  2:72  error    Unable to resolve path to module '../index.js'                       import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/index.ts
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/export
+  2:15  error  Unable to resolve path to module './types/ids.js'                    import/no-unresolved
+  3:15  error  Unable to resolve path to module './types/user.js'                   import/no-unresolved
+  4:15  error  Unable to resolve path to module './types/group.js'                  import/no-unresolved
+  5:15  error  Unable to resolve path to module './types/account.js'                import/no-unresolved
+  6:15  error  Unable to resolve path to module './types/membership.js'             import/no-unresolved
+  7:15  error  Unable to resolve path to module './types/invite.js'                 import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/types/account.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:36  error    Unable to resolve path to module './ids.js'                          import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/types/group.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:33  error    Unable to resolve path to module './ids.js'                          import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/types/invite.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:25  error    Unable to resolve path to module './ids.js'                          import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/types/membership.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:33  error    Unable to resolve path to module './ids.js'                          import/no-unresolved
+
+/home/brian/projects/budget/packages/domain/src/types/user.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:24  error    Unable to resolve path to module './ids.js'                          import/no-unresolved
+
+/home/brian/projects/budget/packages/groups/src/__tests__/group.service.test.ts
+   1:1    error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1    error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1    warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   1:1    warning  There should be at least one empty line between import groups        import/order
+   1:38   error    Unable to resolve path to module 'vitest'                            import/no-unresolved
+   2:30   error    Unable to resolve path to module '../service.js'                     import/no-unresolved
+  23:137  error    Invalid type "number" of template literal expression                 @typescript-eslint/restrict-template-expressions
+
+/home/brian/projects/budget/packages/groups/src/index.ts
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/export
+  1:15  error  Unable to resolve path to module './repository.js'                   import/no-unresolved
+  2:15  error  Unable to resolve path to module './service.js'                      import/no-unresolved
+
+/home/brian/projects/budget/packages/groups/src/repository.ts
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   1:56  warning  'GroupRole' is defined but never used                                @typescript-eslint/no-unused-vars
+   1:94  error    Unable to resolve path to module '@budget/domain'                    import/no-unresolved
+  19:3   error    Async method 'create' has no 'await' expression                      @typescript-eslint/require-await
+  24:3   error    Async method 'get' has no 'await' expression                         @typescript-eslint/require-await
+  25:3   error    Async method 'addMembership' has no 'await' expression               @typescript-eslint/require-await
+  26:3   error    Async method 'listMemberships' has no 'await' expression             @typescript-eslint/require-await
+  27:3   error    Async method 'createInvite' has no 'await' expression                @typescript-eslint/require-await
+  28:3   error    Async method 'getInvite' has no 'await' expression                   @typescript-eslint/require-await
+  29:3   error    Async method 'updateInvite' has no 'await' expression                @typescript-eslint/require-await
+  30:3   error    Async method 'listInvites' has no 'await' expression                 @typescript-eslint/require-await
+
+/home/brian/projects/budget/packages/groups/src/service.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:1   warning  There should be at least one empty line between import groups        import/order
+  1:85  error    Unable to resolve path to module '@budget/domain'                    import/no-unresolved
+  2:59  error    Unable to resolve path to module './repository.js'                   import/no-unresolved
+
+/home/brian/projects/budget/packages/tokens/src/__tests__/session-auth.test.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:38  error    Unable to resolve path to module 'vitest'                            import/no-unresolved
+  2:1   warning  There should be at least one empty line between import groups        import/order
+  2:53  error    Unable to resolve path to module '@budget/auth'                      import/no-unresolved
+  3:48  error    Unable to resolve path to module '../refresh-repository.js'          import/no-unresolved
+  4:49  error    Unable to resolve path to module '../token-service.js'               import/no-unresolved
+  5:36  error    Unable to resolve path to module '../session-auth-service.js'        import/no-unresolved
+
+/home/brian/projects/budget/packages/tokens/src/index.ts
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   error  Resolve error: typescript with invalid interface loaded as resolver  import/export
+  1:15  error  Unable to resolve path to module './token-service.js'                import/no-unresolved
+  2:15  error  Unable to resolve path to module './refresh-repository.js'           import/no-unresolved
+  3:15  error  Unable to resolve path to module './session-auth-service.js'         import/no-unresolved
+
+/home/brian/projects/budget/packages/tokens/src/refresh-repository.ts
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+   1:24  error    Unable to resolve path to module '@budget/domain'                    import/no-unresolved
+  23:3   error    Async method 'create' has no 'await' expression                      @typescript-eslint/require-await
+  30:3   error    Async method 'findByTokenHash' has no 'await' expression             @typescript-eslint/require-await
+  32:17  error    Forbidden non-null assertion                                         @typescript-eslint/no-non-null-assertion
+  34:3   error    Async method 'revoke' has no 'await' expression                      @typescript-eslint/require-await
+
+/home/brian/projects/budget/packages/tokens/src/session-auth-service.ts
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/namespace
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/order
+  1:1   error    Resolve error: typescript with invalid interface loaded as resolver  import/no-unresolved
+  1:1   warning  Resolve error: typescript with invalid interface loaded as resolver  import/no-duplicates
+  1:1   warning  There should be at least one empty line between import groups        import/order
+  1:41  error    Unable to resolve path to module '@budget/auth'                      import/no-unresolved
+  2:31  error    Unable to resolve path to module './token-service.js'                import/no-unresolved
+
+/home/brian/projects/budget/packages/tokens/src/token-service.ts
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver                import/namespace
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver                import/order
+   1:1   error    Resolve error: typescript with invalid interface loaded as resolver                import/no-unresolved
+   1:1   warning  Resolve error: typescript with invalid interface loaded as resolver                import/no-duplicates
+   1:36  error    Unable to resolve path to module 'jose'                                            import/no-unresolved
+   2:1   warning  There should be at least one empty line between import groups                      import/order
+   2:40  error    Unable to resolve path to module '@budget/domain'                                  import/no-unresolved
+   3:41  error    Unable to resolve path to module './refresh-repository.js'                         import/no-unresolved
+  18:5   error    Unsafe return of an error typed value                                              @typescript-eslint/no-unsafe-return
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:19  error    Unsafe member access .from on an `error` typed value                               @typescript-eslint/no-unsafe-member-access
+  18:32  error    Unsafe member access .toString on an `error` typed value                           @typescript-eslint/no-unsafe-member-access
+  30:38  error    This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  45:29  error    Use a ! assertion to more succinctly remove null and undefined from the type       @typescript-eslint/non-nullable-type-assertion-style
+
+✖ 162 problems (117 errors, 45 warnings)
+  2 errors and 8 warnings potentially fixable with the `--fix` option.
+
+ ELIFECYCLE  Command failed with exit code 1.

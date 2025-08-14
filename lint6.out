@@ -1,0 +1,41 @@
+
+> budgetpro-monorepo@0.0.0 lint /home/brian/projects/budget
+> eslint . --ext .ts,.tsx --max-warnings=0
+
+
+/home/brian/projects/budget/packages/auth/src/__tests__/auth.service.test.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/auth/src/service.ts
+   5:1   warning  There should be at least one empty line between import groups  import/order
+  36:25  warning  '_omitted' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+  46:25  warning  '_omitted' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+
+/home/brian/projects/budget/packages/domain/src/__tests__/types.test.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/groups/src/__tests__/group.service.test.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/groups/src/service.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/__tests__/session-auth.test.ts
+  2:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/session-auth-service.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/token-service.ts
+   2:1   warning  There should be at least one empty line between import groups                      import/order
+  18:5   error    Unsafe return of an error typed value                                              @typescript-eslint/no-unsafe-return
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:19  error    Unsafe member access .from on an `error` typed value                               @typescript-eslint/no-unsafe-member-access
+  18:32  error    Unsafe member access .toString on an `error` typed value                           @typescript-eslint/no-unsafe-member-access
+  33:38  error    This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+
+✖ 16 problems (6 errors, 10 warnings)
+  1 error and 8 warnings potentially fixable with the `--fix` option.
+
+ ELIFECYCLE  Command failed with exit code 1.

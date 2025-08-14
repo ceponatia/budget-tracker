@@ -1,0 +1,45 @@
+{
+  "name": "budgetpro-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "BudgetPro monorepo root (see docs/requirements.md)",
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "echo 'No build steps yet'",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm -r --workspace-concurrency=1 test",
+  "typecheck": "tsc --build tsconfig.json --pretty false --force",
+  "prepare": "if command -v git >/dev/null 2>&1 && [ -d .git ]; then husky install; else echo 'Skipping husky (no git repo)'; fi"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+  "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+  "eslint-import-resolver-typescript": "^3.6.1",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.2.0",
+  "typescript": "5.5.4",
+  "vitest": "^1.6.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --cache --fix"
+    ],
+    "*.{ts,tsx,js,jsx,json,md,css,scss}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "jose": "^5.10.0"
+  }
+}

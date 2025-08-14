@@ -1,0 +1,6 @@
+-- Placeholder migration for groups & invites (T-008)
+-- Tables (conceptual):
+-- groups(id UUID PK, owner_user_id UUID FK users(id), name TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL)
+-- group_memberships(group_id UUID FK groups(id), user_id UUID FK users(id), role TEXT NOT NULL, joined_at TIMESTAMPTZ NOT NULL)
+-- group_invites(token TEXT PK, group_id UUID FK groups(id), invited_email TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL, expires_at TIMESTAMPTZ NOT NULL, accepted_at TIMESTAMPTZ NULL)
+-- Index suggestions: memberships(group_id), invites(group_id), invites(expires_at)

@@ -1,0 +1,61 @@
+
+> budgetpro-monorepo@0.0.0 lint /home/brian/projects/budget
+> eslint . --ext .ts,.tsx --max-warnings=0
+
+
+/home/brian/projects/budget/packages/auth/src/__tests__/auth.service.test.ts
+   1:1   warning  There should be at least one empty line between import groups  import/order
+  20:12  error    Forbidden non-null assertion                                   @typescript-eslint/no-non-null-assertion
+  21:12  error    Forbidden non-null assertion                                   @typescript-eslint/no-non-null-assertion
+
+/home/brian/projects/budget/packages/auth/src/service.ts
+   4:8   error    No default export found in imported module "argon2"                                                                          import/default
+   5:1   warning  There should be at least one empty line between import groups                                                                import/order
+  14:9   warning  Caution: `argon2` also has a named export `argon2id`. Check if you meant to write `import {argon2id} from 'argon2'` instead  import/no-named-as-default-member
+  34:32  warning  Caution: `argon2` also has a named export `hash`. Check if you meant to write `import {hash} from 'argon2'` instead          import/no-named-as-default-member
+  36:11  error    Unsafe assignment of an `any` value                                                                                          @typescript-eslint/no-unsafe-assignment
+  36:27  warning  '_omitted' is assigned a value but never used                                                                                @typescript-eslint/no-unused-vars
+  36:59  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  37:14  error    Unsafe assignment of an `any` value                                                                                          @typescript-eslint/no-unsafe-assignment
+  44:22  warning  Caution: `argon2` also has a named export `verify`. Check if you meant to write `import {verify} from 'argon2'` instead      import/no-named-as-default-member
+  46:11  error    Unsafe assignment of an `any` value                                                                                          @typescript-eslint/no-unsafe-assignment
+  46:27  warning  '_omitted' is assigned a value but never used                                                                                @typescript-eslint/no-unused-vars
+  46:59  error    Unexpected any. Specify a different type                                                                                     @typescript-eslint/no-explicit-any
+  47:14  error    Unsafe assignment of an `any` value                                                                                          @typescript-eslint/no-unsafe-assignment
+
+/home/brian/projects/budget/packages/domain/src/__tests__/types.test.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/groups/src/__tests__/group.service.test.ts
+   1:1    warning  There should be at least one empty line between import groups  import/order
+  23:137  error    Invalid type "number" of template literal expression           @typescript-eslint/restrict-template-expressions
+
+/home/brian/projects/budget/packages/groups/src/repository.ts
+  1:56  warning  'GroupRole' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/brian/projects/budget/packages/groups/src/service.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/__tests__/session-auth.test.ts
+  2:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/refresh-repository.ts
+  32:17  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/brian/projects/budget/packages/tokens/src/session-auth-service.ts
+  1:1  warning  There should be at least one empty line between import groups  import/order
+
+/home/brian/projects/budget/packages/tokens/src/token-service.ts
+   2:1   warning  There should be at least one empty line between import groups                      import/order
+  18:5   error    Unsafe return of an error typed value                                              @typescript-eslint/no-unsafe-return
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:12  error    Unsafe call of an `error` type typed value                                         @typescript-eslint/no-unsafe-call
+  18:19  error    Unsafe member access .from on an `error` typed value                               @typescript-eslint/no-unsafe-member-access
+  18:32  error    Unsafe member access .toString on an `error` typed value                           @typescript-eslint/no-unsafe-member-access
+  30:38  error    This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  45:29  error    Use a ! assertion to more succinctly remove null and undefined from the type       @typescript-eslint/non-nullable-type-assertion-style
+
+✖ 32 problems (18 errors, 14 warnings)
+  2 errors and 8 warnings potentially fixable with the `--fix` option.
+
+ ELIFECYCLE  Command failed with exit code 1.

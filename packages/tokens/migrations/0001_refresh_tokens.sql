@@ -1,0 +1,4 @@
+-- Placeholder migration for refresh_tokens table (T-007)
+-- Column definitions: id UUID PK, user_id UUID FK users(id), token_hash CHAR(64) UNIQUE NOT NULL,
+-- expires_at TIMESTAMPTZ NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), revoked_at TIMESTAMPTZ NULL,
+-- replaced_by_token_id UUID NULL REFERENCES refresh_tokens(id)
