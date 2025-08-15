@@ -89,3 +89,83 @@ export class AccessTokenVault implements IAccessTokenVault {
     return decryptSecret(blob);
   }
 }
+
+// Repository & service scaffolding (T-023)
+export interface StoredAccessToken {
+  id: string; // UUID
+  itemId: string; // provider item identifier
+  providerType: string; // e.g. 'PLAID'
+  blob: EncryptedBlob;
+  createdAt: Date;
+  rotatedAt?: Date;
+}
+
+export interface AccessTokenRepository {
+  persist(record: StoredAccessToken): Promise<void>;
+  findByItemId(itemId: string): Promise<StoredAccessToken | undefined>;
+  rotate(itemId: string, newRecord: StoredAccessToken): Promise<void>; // upsert semantics
+}
+
+export class InMemoryAccessTokenRepository implements AccessTokenRepository {
+  private byItem = new Map<string, StoredAccessToken>();
+  async persist(record: StoredAccessToken): Promise<void> {
+    this.byItem.set(record.itemId, record);
+  }
+  async findByItemId(itemId: string): Promise<StoredAccessToken | undefined> {
+    return this.byItem.get(itemId);
+  }
+  async rotate(itemId: string, newRecord: StoredAccessToken): Promise<void> {
+    const existing = this.byItem.get(itemId);
+    if (existing) newRecord.rotatedAt = new Date();
+    this.byItem.set(itemId, newRecord);
+  }
+}
+
+export interface AccessTokenServiceDeps {
+  vault: IAccessTokenVault;
+  repo: AccessTokenRepository;
+  uuid(): string;
+  now(): Date;
+}
+
+export class AccessTokenService {
+  constructor(private deps: AccessTokenServiceDeps) {}
+  async store(
+    itemId: string,
+    providerType: string,
+    accessToken: string,
+  ): Promise<StoredAccessToken> {
+    const blob = await this.deps.vault.store(accessToken);
+    const record: StoredAccessToken = {
+      id: this.deps.uuid(),
+      itemId,
+      providerType,
+      blob,
+      createdAt: this.deps.now(),
+    };
+    await this.deps.repo.persist(record);
+    return record;
+  }
+  async reveal(itemId: string): Promise<string | undefined> {
+    const rec = await this.deps.repo.findByItemId(itemId);
+    if (!rec) return undefined;
+    return this.deps.vault.reveal(rec.blob);
+  }
+  async rotate(
+    itemId: string,
+    providerType: string,
+    newAccessToken: string,
+  ): Promise<StoredAccessToken> {
+    const blob = await this.deps.vault.store(newAccessToken);
+    const record: StoredAccessToken = {
+      id: this.deps.uuid(),
+      itemId,
+      providerType,
+      blob,
+      createdAt: this.deps.now(),
+      rotatedAt: this.deps.now(),
+    };
+    await this.deps.repo.rotate(itemId, record);
+    return record;
+  }
+}

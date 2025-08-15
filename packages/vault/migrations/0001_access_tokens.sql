@@ -1,0 +1,21 @@
+-- Migration (T-023) create table for encrypted access tokens
+-- Stores provider access tokens encrypted via AccessTokenVault
+-- Columns:
+-- id UUID PK
+-- item_id TEXT UNIQUE NOT NULL (maps to provider item identifier)
+-- provider_type TEXT NOT NULL (e.g. 'PLAID')
+-- encrypted_iv TEXT NOT NULL
+-- encrypted_ciphertext TEXT NOT NULL
+-- created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+-- rotated_at TIMESTAMPTZ NULL -- when token rotated via provider
+
+-- Example (dialect-agnostic pseudo DDL; adjust for actual RDBMS, e.g., PostgreSQL):
+-- CREATE TABLE access_tokens (
+--   id UUID PRIMARY KEY,
+--   item_id TEXT UNIQUE NOT NULL,
+--   provider_type TEXT NOT NULL,
+--   encrypted_iv TEXT NOT NULL,
+--   encrypted_ciphertext TEXT NOT NULL,
+--   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+--   rotated_at TIMESTAMPTZ NULL
+-- );

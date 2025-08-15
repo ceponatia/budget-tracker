@@ -21,6 +21,7 @@ const configSchema = z.object({
   PLAID_SECRET: z.string().optional(),
   PLAID_ENV: z.enum(['sandbox', 'development', 'production']).optional().default('sandbox'),
   AGGREGATOR_VAULT_KEY: z.string().optional(), // base64 32 bytes preferred
+  PLAID_LINK_PUBLIC_KEY: z.string().optional(), // placeholder for legacy Plaid Link or future aggregator pub key
 });
 
 export type AppConfig = z.infer<typeof configSchema> & {
