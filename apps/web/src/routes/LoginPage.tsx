@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/auth.js';
 
-export function LoginPage() {
+export function LoginPage(): JSX.Element {
   // login function safe (no this usage)
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { login, loading } = useAuth();

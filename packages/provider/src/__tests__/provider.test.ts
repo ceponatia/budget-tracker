@@ -35,13 +35,51 @@ describe('PlaidAdapter (mocked client)', () => {
   // Monkey patch PlaidAdapter internal client after construction
   function makeAdapter() {
     const a = new PlaidAdapter({ clientId: 'id', secret: 'sec', env: 'sandbox' });
+    // Local inline shape types not exported (removed explicit declarations to satisfy lint rules)
     // @ts-expect-error accessing private for test mock injection
     a.client = {
-      linkTokenCreate: async () => ({ data: { link_token: 'ltok', expiration: new Date().toISOString() } }) as any,
-      itemPublicTokenExchange: async () => ({ data: { access_token: 'acc_tok', item_id: 'item123' } }) as any,
-      accountsGet: async () => ({ data: { accounts: [{ account_id: 'acc1', name: 'Checking', official_name: 'Primary Checking', balances: { current: 123.45, iso_currency_code: 'USD' }, type: 'depository', subtype: 'checking', mask: '1111' }] } }) as any,
-      transactionsSync: async () => ({ data: { added: [{ transaction_id: 't1', account_id: 'acc1', date: '2025-01-01', name: 'Coffee', amount: 4.50, iso_currency_code: 'USD', pending: false, category: ['Food', 'Coffee'] }], modified: [], removed: [], next_cursor: 'cursor2', has_more: false } }) as any,
-    };
+      linkTokenCreate: async () => ({
+        data: { link_token: 'ltok', expiration: new Date().toISOString() },
+      }),
+      itemPublicTokenExchange: async () => ({
+        data: { access_token: 'acc_tok', item_id: 'item123' },
+      }),
+      accountsGet: async () => ({
+        data: {
+          accounts: [
+            {
+              account_id: 'acc1',
+              name: 'Checking',
+              official_name: 'Primary Checking',
+              balances: { current: 123.45, iso_currency_code: 'USD' },
+              type: 'depository',
+              subtype: 'checking',
+              mask: '1111',
+            },
+          ],
+        },
+      }),
+      transactionsSync: async () => ({
+        data: {
+          added: [
+            {
+              transaction_id: 't1',
+              account_id: 'acc1',
+              date: '2025-01-01',
+              name: 'Coffee',
+              amount: 4.5,
+              iso_currency_code: 'USD',
+              pending: false,
+              category: ['Food', 'Coffee'],
+            },
+          ],
+          modified: [],
+          removed: [],
+          next_cursor: 'cursor2',
+          has_more: false,
+        },
+      }),
+    } as unknown as PlaidAdapter['client'];
     return a;
   }
   it('creates link token (plaid adapter)', async () => {
@@ -57,8 +95,10 @@ describe('PlaidAdapter (mocked client)', () => {
   it('maps accounts', async () => {
     const a = makeAdapter();
     const accounts = await a.getAccounts('acc_tok');
-  expect(accounts[0]!.name).toBe('Checking');
-  expect(accounts[0]!.currentBalance).toBe(123.45);
+    expect(accounts.length).toBeGreaterThan(0);
+    const first = accounts[0];
+    expect(first?.name).toBe('Checking');
+    expect(first?.currentBalance).toBe(123.45);
   });
   it('syncs transactions', async () => {
     const a = makeAdapter();

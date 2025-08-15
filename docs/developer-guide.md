@@ -15,13 +15,13 @@ pnpm install
 
 ## 3. Key Scripts
 
-| Command | Purpose |
-| ------- | ------- |
-| `pnpm lint` | ESLint on source (no warnings allowed) |
-| `pnpm typecheck` | Builds all TS project references (no emit) |
-| `pnpm test` | Runs all unit & integration tests |
-| `pnpm spec:lint` | Lints OpenAPI spec (generates `openapi.generated.json`) |
-| `pnpm config:check` | Validates environment variables via schema |
+| Command             | Purpose                                                 |
+| ------------------- | ------------------------------------------------------- |
+| `pnpm lint`         | ESLint on source (no warnings allowed)                  |
+| `pnpm typecheck`    | Builds all TS project references (no emit)              |
+| `pnpm test`         | Runs all unit & integration tests                       |
+| `pnpm spec:lint`    | Lints OpenAPI spec (generates `openapi.generated.json`) |
+| `pnpm config:check` | Validates environment variables via schema              |
 
 ## 4. OpenAPI (T-017)
 
@@ -41,15 +41,21 @@ Central config: `@budget/config` validates required environment. Extend schema b
 
 ## 6. Testing Utilities (T-016)
 
-`@budget/test-utils` exports helpers for API integration tests (register, createGroup, issueInvite) to reduce duplication.
+`@budget/test-utils` exports helpers for API integration tests (register, createGroup, issueInvite) to reduce duplication and enforce runtime validation.
+
+Notes:
+
+- The legacy monolithic `api.test.ts` has been removed; tests are now domain-scoped (e.g., `auth.test.ts`, `groups.test.ts`).
+- Helpers return typed results and apply zod validation where appropriate so we avoid unsafe `any` patterns.
+- When adding new integration tests prefer composing existing helpers; if a new helper is needed add accompanying unit tests in `@budget/test-utils`.
 
 ## 7. Troubleshooting
 
-| Symptom | Fix |
-| ------- | ---- |
-| CONFIG_INVALID error | Provide required env vars or correct value types |
+| Symptom                                | Fix                                               |
+| -------------------------------------- | ------------------------------------------------- |
+| CONFIG_INVALID error                   | Provide required env vars or correct value types  |
 | Spectral failing operation-operationId | Add unique `operationId` to offending path method |
-| Electron smoke failing | Inspect `electron-smoke.log` artifact from CI |
+| Electron smoke failing                 | Inspect `electron-smoke.log` artifact from CI     |
 
 ## 8. Adding New Packages
 

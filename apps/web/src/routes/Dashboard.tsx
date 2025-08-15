@@ -1,6 +1,6 @@
 import { useAuth } from '../state/auth.js';
 
-export function Dashboard() {
+export function Dashboard(): JSX.Element {
   // logout function safe (no this usage)
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { user, logout } = useAuth();

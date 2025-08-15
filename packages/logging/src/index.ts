@@ -15,7 +15,7 @@ export interface LogRecord {
 
 const testBuffer: LogRecord[] = [];
 
-function emit(rec: LogRecord) {
+function emit(rec: LogRecord): void {
   if (process.env.NODE_ENV === 'test') {
     testBuffer.push(rec);
   }
@@ -24,15 +24,21 @@ function emit(rec: LogRecord) {
 }
 
 export const logger = {
-  child(extra: { traceId?: string } = {}) {
+  child(extra: { traceId?: string } = {}): ReturnType<typeof createLogger> {
     return createLogger(extra.traceId);
   },
-  get testBuffer() {
+  get testBuffer(): LogRecord[] {
     return testBuffer;
   },
 };
 
-function createLogger(traceId?: string) {
+function createLogger(traceId?: string): {
+  traceId?: string;
+  debug: (msg: string, fields?: Record<string, unknown>) => void;
+  info: (msg: string, fields?: Record<string, unknown>) => void;
+  warn: (msg: string, fields?: Record<string, unknown>) => void;
+  error: (msg: string, err?: unknown, fields?: Record<string, unknown>) => void;
+} {
   return {
     traceId,
     debug(msg: string, fields?: Record<string, unknown>) {

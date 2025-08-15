@@ -7,9 +7,16 @@ import { z } from 'zod';
 const configSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.string().regex(/^\d+$/).transform(Number).default('3000'),
-  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 chars').default('dev-secret-change'),
+  JWT_SECRET: z
+    .string()
+    .min(16, 'JWT_SECRET must be at least 16 chars')
+    .default('dev-secret-change'),
   ACCESS_TTL_SEC: z.string().regex(/^\d+$/).transform(Number).default('900'),
-  REFRESH_TTL_SEC: z.string().regex(/^[\d]+$/).transform(Number).default(String(60 * 60 * 24)),
+  REFRESH_TTL_SEC: z
+    .string()
+    .regex(/^[\d]+$/)
+    .transform(Number)
+    .default(String(60 * 60 * 24)),
   PLAID_CLIENT_ID: z.string().optional(),
   PLAID_SECRET: z.string().optional(),
   PLAID_ENV: z.enum(['sandbox', 'development', 'production']).optional().default('sandbox'),
@@ -26,7 +33,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   if (cached) return cached;
   const parsed = configSchema.safeParse(env);
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((i: { path: (string|number)[]; message: string }) => `${i.path.join('.')}: ${i.message}`).join(', ');
+    const issues = parsed.error.issues
+      .map(
+        (i: { path: (string | number)[]; message: string }) => `${i.path.join('.')}: ${i.message}`,
+      )
+      .join(', ');
     throw new Error(`CONFIG_INVALID: ${issues}`);
   }
   const base = parsed.data;
@@ -38,4 +49,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   return cached;
 }
 
-export function resetConfigForTests() { cached = undefined; }
+export function resetConfigForTests(): void {
+  cached = undefined;
+}

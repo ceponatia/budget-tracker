@@ -11,25 +11,25 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "pnpm -r --workspace-concurrency=1 test",
-  "typecheck": "tsc --build tsconfig.json --pretty false --force",
-  "spec:dump": "pnpm --filter @budget/api build && node tools/openapi-dump.cjs > openapi.generated.json",
-  "spec:lint": "pnpm spec:dump && spectral lint openapi.generated.json -o .spectral-report.json",
-  "config:check": "node tools/config-check.cjs",
-  "prepare": "husky"
+    "typecheck": "tsc --build tsconfig.json --pretty false --force",
+    "spec:dump": "pnpm --filter @budget/api build && node tools/openapi-dump.cjs > openapi.generated.json",
+    "spec:lint": "pnpm spec:dump && spectral lint openapi.generated.json -o .spectral-report.json",
+    "config:check": "node tools/config-check.cjs",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@stoplight/spectral-cli": "^6.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-import": "^2.29.0",
     "eslint-import-resolver-typescript": "^3.6.1",
-  "husky": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.2.0",
     "typescript": "5.5.4",
-  "vitest": "^1.6.1",
-  "@stoplight/spectral-cli": "^6.11.0"
+    "vitest": "^1.6.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -44,6 +44,7 @@
     "pnpm": ">=8.0.0"
   },
   "dependencies": {
-    "jose": "^5.10.0"
+    "jose": "^5.10.0",
+    "zod": "^3.25.76"
   }
 }

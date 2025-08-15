@@ -4,6 +4,10 @@
     "lib": ["ES2022", "DOM"],
     "module": "ESNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@budget/*": ["packages/*/src"]
+    },
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,

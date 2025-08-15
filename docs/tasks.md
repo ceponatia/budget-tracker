@@ -96,6 +96,7 @@ Status: ALL Phase 1 core tasks (T-001–T-015) and bridge hardening tasks (T-016
 - Consider pruning committed generated files (`openapi.generated.json`, `.spectral-report.json`) or mark them in `.gitignore` if not required as artifacts.
 
 Scheduling Resolution (mapped to future tasks):
+
 - Context builder: now scheduled as T-039.
 - Refresh token reuse detection: scheduled as T-040.
 - OpenAPI component/schema expansion: scheduled as T-041 (with final polish in existing T-093).
@@ -113,31 +114,31 @@ The codebase is stable with baseline auth, group management, logging, config val
 
 Link bank via aggregator sandbox, pull transactions, store & list with basic filtering; budgets minimal; performance baseline.
 
-| ID    | Task                                                            | Type  | Dependencies | Deliverable                  | Validation                            |
-| ----- | --------------------------------------------------------------- | ----- | ------------ | ---------------------------- | ------------------------------------- |
-| T-020 | Choose initial aggregator (decision record)                     | SEC   | T-013        | ADR in `docs/adr/` (ADR-0001) | ADR merged, referenced                |
-| T-021 | Aggregator abstraction interface (ProviderAdapter)              | BE    | T-020        | Interface + mock impl (DONE) | Unit tests with mock provider (passing) |
-| T-022 | Plaid/Stripe sandbox client integration (token exchange)        | BE    | T-021        | Provider module + env config (DONE) | Sandbox token exchange test (mocked Plaid adapter) |
-| T-023 | Secure storage (encrypted) for access tokens                    | BE    | T-022        | Vault service + migration (DONE)   | Stored ciphertext differs from plain (vault test) |
-| T-024 | Link flow frontend (launch widget, receive public token)        | FE    | T-022        | UI component + state         | Manual sandbox link success           |
-| T-025 | Accounts ingestion + persistence (/accounts sync)               | BE    | T-022        | Endpoint + mapping tests     | Account list matches provider sandbox |
-| T-026 | Nightly sync job skeleton (scheduler + placeholder)             | BE    | T-025        | Worker process script        | Cron trigger dry-run log              |
-| T-027 | Transactions fetch & persistence (initial full sync)            | BE    | T-025        | Endpoint + mapping           | Data row count >0 after link          |
-| T-028 | Transaction list API (pagination, basic filters)                | BE    | T-027        | Controller + repo tests      | Filter tests pass                     |
-| T-029 | Transaction list UI (infinite scroll/pagination)                | FE    | T-028        | Component + query hooks      | Manual scroll loads pages             |
-| T-030 | Auto-categorization placeholder (provider category passthrough) | BE    | T-028        | Category assignment logic    | Unit test asserts mapping             |
-| T-031 | Manual category edit UI + API                                   | FE/BE | T-030        | PATCH endpoint + form        | Edit persists + reflected on refresh  |
-| T-032 | Budget entities (Category, BudgetPeriod, Allocation) migrations | BE    | T-005        | Migrations + models          | Migration apply success               |
-| T-033 | Budget creation API & validation                                | BE    | T-032        | Endpoint + zod schema        | Unit + integration tests green        |
-| T-034 | Budget list & per-category spent computation                    | BE    | T-033, T-027 | Service + tests              | Computation matches fixture data      |
-| T-035 | Budget dashboard UI (progress bars, color coding)               | FE    | T-034        | React components             | Visual thresholds correct (storybook) |
-| T-036 | Performance baseline tests (transaction list, budget dashboard) | QA    | T-029, T-035 | Scripted load test           | P95 timings recorded < targets        |
-| T-037 | OpenAPI/Swagger doc generation & publish route                  | BE    | T-028        | Swagger config file          | Spec accessible at /docs              |
-| T-038 | Access control regression tests (transactions isolation)        | QA    | T-028        | Test suite                   | Unauthorized access 403               |
-| T-039 | Test-utils context builder (shared setup, seeded user/group)    | QA    | T-028        | Extended helpers + docs      | Existing integration tests refactored to use builder (LOC reduction) |
-| T-040 | Refresh token reuse detection & invalidation logic              | SEC   | T-007        | Token guard + tests          | Reusing old refresh token triggers session invalidation test          |
-| T-041 | OpenAPI component/schema expansion (Error, Account, Txn, Paging)| BE/DOC| T-028        | Expanded spec components     | Spectral lint passes; endpoints reference new components              |
-| T-042 | Generated spec artifact pruning & CI artifact publish           | INF   | T-017        | .gitignore + CI upload step  | `git status` clean after build; spec downloadable from CI             |
+| ID    | Task                                                             | Type   | Dependencies | Deliverable                         | Validation                                                           |
+| ----- | ---------------------------------------------------------------- | ------ | ------------ | ----------------------------------- | -------------------------------------------------------------------- |
+| T-020 | Choose initial aggregator (decision record)                      | SEC    | T-013        | ADR in `docs/adr/` (ADR-0001)       | ADR merged, referenced                                               |
+| T-021 | Aggregator abstraction interface (ProviderAdapter)               | BE     | T-020        | Interface + mock impl (DONE)        | Unit tests with mock provider (passing)                              |
+| T-022 | Plaid/Stripe sandbox client integration (token exchange)         | BE     | T-021        | Provider module + env config (DONE) | Sandbox token exchange test (mocked Plaid adapter)                   |
+| T-023 | Secure storage (encrypted) for access tokens                     | BE     | T-022        | Vault service + migration (DONE)    | Stored ciphertext differs from plain (vault test)                    |
+| T-024 | Link flow frontend (launch widget, receive public token)         | FE     | T-022        | UI component + state                | Manual sandbox link success                                          |
+| T-025 | Accounts ingestion + persistence (/accounts sync)                | BE     | T-022        | Endpoint + mapping tests            | Account list matches provider sandbox                                |
+| T-026 | Nightly sync job skeleton (scheduler + placeholder)              | BE     | T-025        | Worker process script               | Cron trigger dry-run log                                             |
+| T-027 | Transactions fetch & persistence (initial full sync)             | BE     | T-025        | Endpoint + mapping                  | Data row count >0 after link                                         |
+| T-028 | Transaction list API (pagination, basic filters)                 | BE     | T-027        | Controller + repo tests             | Filter tests pass                                                    |
+| T-029 | Transaction list UI (infinite scroll/pagination)                 | FE     | T-028        | Component + query hooks             | Manual scroll loads pages                                            |
+| T-030 | Auto-categorization placeholder (provider category passthrough)  | BE     | T-028        | Category assignment logic           | Unit test asserts mapping                                            |
+| T-031 | Manual category edit UI + API                                    | FE/BE  | T-030        | PATCH endpoint + form               | Edit persists + reflected on refresh                                 |
+| T-032 | Budget entities (Category, BudgetPeriod, Allocation) migrations  | BE     | T-005        | Migrations + models                 | Migration apply success                                              |
+| T-033 | Budget creation API & validation                                 | BE     | T-032        | Endpoint + zod schema               | Unit + integration tests green                                       |
+| T-034 | Budget list & per-category spent computation                     | BE     | T-033, T-027 | Service + tests                     | Computation matches fixture data                                     |
+| T-035 | Budget dashboard UI (progress bars, color coding)                | FE     | T-034        | React components                    | Visual thresholds correct (storybook)                                |
+| T-036 | Performance baseline tests (transaction list, budget dashboard)  | QA     | T-029, T-035 | Scripted load test                  | P95 timings recorded < targets                                       |
+| T-037 | OpenAPI/Swagger doc generation & publish route                   | BE     | T-028        | Swagger config file                 | Spec accessible at /docs                                             |
+| T-038 | Access control regression tests (transactions isolation)         | QA     | T-028        | Test suite                          | Unauthorized access 403                                              |
+| T-039 | Test-utils context builder (shared setup, seeded user/group)     | QA     | T-028        | Extended helpers + docs             | Existing integration tests refactored to use builder (LOC reduction) |
+| T-040 | Refresh token reuse detection & invalidation logic               | SEC    | T-007        | Token guard + tests                 | Reusing old refresh token triggers session invalidation test         |
+| T-041 | OpenAPI component/schema expansion (Error, Account, Txn, Paging) | BE/DOC | T-028        | Expanded spec components            | Spectral lint passes; endpoints reference new components             |
+| T-042 | Generated spec artifact pruning & CI artifact publish            | INF    | T-017        | .gitignore + CI upload step         | `git status` clean after build; spec downloadable from CI            |
 
 ### Phase 2 Exit Validation
 
@@ -289,3 +290,17 @@ Backlog (prioritized later): second aggregator, budget rollover logic, mobile ex
 ---
 
 End of Task Breakdown v1.0
+
+---
+
+## Maintenance: Lint Remediation (Aug 2025) – Archived
+
+Status: COMPLETE. This section is archived for historical reference and may be pruned after 60 days of stability.
+
+Summary:
+
+- Addressed unsafe assignments, unnecessary conditions, and nullish coalescing inconsistencies across provider, vault, and tests.
+- Introduced / standardized `@budget/test-utils` helpers; removed legacy monolithic `api.test.ts` in favor of domain-scoped tests to prevent regression of unsafe patterns.
+- Result: `pnpm lint` passes with zero errors; no blanket disables remain.
+
+Historical Task Log (condensed): LINT-001 through LINT-006 all DONE (details previously listed).

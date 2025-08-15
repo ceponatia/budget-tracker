@@ -27,7 +27,11 @@ module.exports = {
   '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/consistent-type-definitions': ['error','interface'],
   '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-  '@typescript-eslint/require-await': 'off'
+  '@typescript-eslint/require-await': 'off',
+  // Additional TypeScript rules for better type safety
+  '@typescript-eslint/no-explicit-any': 'error',
+  '@typescript-eslint/explicit-module-boundary-types': 'error',
+  '@typescript-eslint/no-non-null-assertion': 'error'
   },
   ignorePatterns: ['dist','node_modules']
 };

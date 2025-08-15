@@ -11,6 +11,9 @@ importers:
       jose:
         specifier: ^5.10.0
         version: 5.10.0
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@stoplight/spectral-cli':
         specifier: ^6.11.0
