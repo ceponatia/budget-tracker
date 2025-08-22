@@ -15,9 +15,12 @@
     { "path": "../auth" },
     { "path": "../tokens" },
     { "path": "../groups" },
+    { "path": "../accounts" },
+    { "path": "../transactions" },
     { "path": "../logging" },
-  { "path": "../domain" },
-  { "path": "../config" },
-  { "path": "../test-utils" }
+    { "path": "../domain" },
+    { "path": "../config" },
+    { "path": "../budgets" },
+    { "path": "../test-utils" }
   ]
 }

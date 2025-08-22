@@ -9,19 +9,20 @@ Covers local setup, scripts, troubleshooting.
 
 ## 2. Install
 
-```
+```bash
 pnpm install
 ```
 
 ## 3. Key Scripts
 
-| Command             | Purpose                                                 |
-| ------------------- | ------------------------------------------------------- |
-| `pnpm lint`         | ESLint on source (no warnings allowed)                  |
-| `pnpm typecheck`    | Builds all TS project references (no emit)              |
-| `pnpm test`         | Runs all unit & integration tests                       |
-| `pnpm spec:lint`    | Lints OpenAPI spec (generates `openapi.generated.json`) |
-| `pnpm config:check` | Validates environment variables via schema              |
+| Command                    | Purpose                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| `pnpm lint`                | ESLint on source (no warnings allowed)                  |
+| `pnpm typecheck`           | Builds all TS project references (no emit)              |
+| `pnpm test`                | Runs all unit tests (current unified suite)             |
+| (planned) `pnpm test:unit` | Alias for fast unit scope once integration split exists |
+| `pnpm spec:lint`           | Lints OpenAPI spec (generates `openapi.generated.json`) |
+| `pnpm config:check`        | Validates environment variables via schema              |
 
 ## 4. OpenAPI (T-017)
 
@@ -67,4 +68,19 @@ Notes:
 
 See `docs/security-baseline.md` (T-013) and implementation in `@budget/logging` and API error middleware.
 
--- End of Developer Guide v0.1
+## 10. API Architecture Update (Aug 2025)
+
+- `app.ts` (in `packages/api/src/`) is the composition root creating services + registering modular route groups (auth, groups, accounts, transactions, budgets).
+- `server.ts` is a thin bootstrap (listen only) exporting `createServer()` for tests.
+- Shared middleware/utilities (trace, auth, error wrapper) live under `packages/api/src/routes/`.
+- This separation enables future dependency injection (swap in test doubles without editing bootstrap).
+
+### Planned Test Script Segmentation
+
+Add root scripts:
+
+`"test:unit": "pnpm -r --workspace-concurrency=1 --filter ./packages/* --filter ./apps/* test"`
+
+Later introduce `test:integration` (API HTTP + e2e) and have root `test` run both.
+
+-- End of Developer Guide v0.2

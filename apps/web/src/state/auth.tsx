@@ -10,6 +10,7 @@ interface AuthContextValue {
   login(data: { email: string; password: string }): Promise<void>;
   logout(): void;
   loading: boolean;
+  accessToken: string | null;
 }
 
 const AuthContext = React.createContext<AuthContextValue | undefined>(undefined);
@@ -112,7 +113,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('refreshToken', r.refreshToken);
   }
 
-  const value: AuthContextValue = { user, register, login, logout, loading };
+  const value: AuthContextValue = {
+    user,
+    register,
+    login,
+    logout,
+    loading,
+    accessToken: _accessToken,
+  };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

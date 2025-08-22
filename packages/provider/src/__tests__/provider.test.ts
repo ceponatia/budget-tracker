@@ -22,9 +22,9 @@ describe('Provider mock adapter', () => {
     expect(accounts.length).toBe(0);
   });
 
-  it('syncTransactions returns empty page with hasMore false', async () => {
+  it('syncTransactions returns mock transaction with hasMore false', async () => {
     const page = await adapter.syncTransactions('mock-access');
-    expect(page.added).toEqual([]);
+    expect(page.added.length).toBe(1);
     expect(page.modified).toEqual([]);
     expect(page.removed).toEqual([]);
     expect(page.hasMore).toBe(false);

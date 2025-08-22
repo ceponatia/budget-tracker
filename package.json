@@ -5,6 +5,7 @@
   "description": "BudgetPro monorepo root (see docs/requirements.md)",
   "license": "UNLICENSED",
   "scripts": {
+    "dev": "pnpm --parallel --filter @budget/api --filter @budget/web dev",
     "build": "pnpm --filter @budget/web build && pnpm --filter @budget/desktop build",
     "lint": "eslint apps/desktop/src apps/web/src packages/*/src --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint apps/desktop/src apps/web/src packages/*/src --ext .ts,.tsx --fix",
@@ -18,6 +19,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@stoplight/spectral-cli": "^6.11.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",

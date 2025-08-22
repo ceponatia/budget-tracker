@@ -24,7 +24,7 @@ These conventions apply throughout:
 
 ## Phase 1: Foundations & Auth (Months 0–1)
 
-### Goal Exit Criteria
+### Phase 1 Goal Exit Criteria
 
 Core repo scaffold, CI, basic auth & group model working; Electron shell opens SPA; coding standards + lint/test pipeline enforced.
 
@@ -110,7 +110,7 @@ The codebase is stable with baseline auth, group management, logging, config val
 
 ## Phase 2: Accounts & Transactions (Months 2–4)
 
-### Goal Exit Criteria
+### Phase 2 Goal Exit Criteria
 
 Link bank via aggregator sandbox, pull transactions, store & list with basic filtering; budgets minimal; performance baseline.
 
@@ -120,7 +120,7 @@ Link bank via aggregator sandbox, pull transactions, store & list with basic fil
 | T-021 | Aggregator abstraction interface (ProviderAdapter)               | BE     | T-020        | Interface + mock impl         | Unit tests with mock provider (passing)                              |
 | T-022 | Plaid/Stripe sandbox client integration (token exchange)         | BE     | T-021        | Provider module + env config  | Sandbox token exchange test (mocked Plaid adapter)                   |
 | T-023 | Secure storage (encrypted) for access tokens                     | BE     | T-022        | Vault service + migration     | Stored ciphertext differs from plain (vault test)                    |
-| T-024 | Link flow frontend (launch widget, receive public token)         | FE     | T-022        | UI component + state (DONE)   | Manual sandbox link success (mock placeholder)                       |
+| T-024 | Link flow frontend (launch widget, receive public token)         | FE     | T-022        | UI component + state          | Manual sandbox link success (mock placeholder)                       |
 | T-025 | Accounts ingestion + persistence (/accounts sync)                | BE     | T-022        | Endpoint + mapping tests      | Account list matches provider sandbox                                |
 | T-026 | Nightly sync job skeleton (scheduler + placeholder)              | BE     | T-025        | Worker process script         | Cron trigger dry-run log                                             |
 | T-027 | Transactions fetch & persistence (initial full sync)             | BE     | T-025        | Endpoint + mapping            | Data row count >0 after link                                         |
@@ -150,7 +150,7 @@ Link bank via aggregator sandbox, pull transactions, store & list with basic fil
 
 ## Phase 3: Offline & Sync (Months 4–5)
 
-### Goal Exit Criteria
+### Phase 3 Goal Exit Criteria
 
 Desktop offline viewing + mutation queue with auto replay; conflict handling; manual transactions.
 
@@ -178,7 +178,7 @@ Desktop offline viewing + mutation queue with auto replay; conflict handling; ma
 
 ## Phase 4: Advanced Features & Compliance (Months 5–6)
 
-### Goal Exit Criteria
+### Phase 4 Goal Exit Criteria
 
 Reporting, family sharing, notifications, export/delete privacy flows, audit logging, refined budgets.
 
@@ -209,7 +209,7 @@ Reporting, family sharing, notifications, export/delete privacy flows, audit log
 
 ## Phase 5: Beta Hardening (Month 7)
 
-### Goal Exit Criteria
+### Phase 5 Goal Exit Criteria
 
 Performance tuning, security review, penetration test fixes, stability for launch.
 
@@ -234,7 +234,7 @@ Performance tuning, security review, penetration test fixes, stability for launc
 
 ## Phase 6: Launch (Month 8)
 
-### Goal Exit Criteria
+### Phase 6 Goal Exit Criteria
 
 Signed installers published, production infra live, monitoring & rollback in place.
 

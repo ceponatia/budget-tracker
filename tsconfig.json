@@ -1,16 +1,20 @@
 {
   "files": [],
   "references": [
-  { "path": "packages/domain" },
-  { "path": "packages/provider" },
-  { "path": "packages/vault" },
-  { "path": "packages/auth" },
-  { "path": "packages/tokens" },
-  { "path": "packages/groups" },
-  { "path": "packages/logging" },
-  { "path": "packages/config" },
-  { "path": "packages/test-utils" },
-  { "path": "packages/api" },
+    { "path": "packages/domain" },
+    { "path": "packages/provider" },
+    { "path": "packages/vault" },
+    { "path": "packages/auth" },
+    { "path": "packages/tokens" },
+    { "path": "packages/groups" },
+    { "path": "packages/logging" },
+    { "path": "packages/config" },
+    { "path": "packages/accounts" },
+    { "path": "packages/transactions" },
+    { "path": "packages/jobs" },
+    { "path": "packages/test-utils" },
+    { "path": "packages/api" },
+    { "path": "packages/budgets" },
     { "path": "apps/desktop" }
   ]
 }

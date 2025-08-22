@@ -174,7 +174,23 @@ export function createMockAdapter(): ProviderAdapter {
       return [];
     },
     async syncTransactions(): Promise<TransactionsSyncPage> {
-      return { added: [], modified: [], removed: [], hasMore: false };
+      return {
+        added: [
+          {
+            id: 'txn_mock_1',
+            accountId: 'acc_mock_1',
+            postedAt: '2025-01-01',
+            description: 'Mock Purchase',
+            amount: 1234,
+            currency: 'USD',
+            pending: false,
+            category: ['Mock'],
+          },
+        ],
+        modified: [],
+        removed: [],
+        hasMore: false,
+      };
     },
   };
 }

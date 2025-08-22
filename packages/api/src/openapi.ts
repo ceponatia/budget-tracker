@@ -13,6 +13,9 @@ export const openApiSpec = {
   tags: [
     { name: 'auth', description: 'Authentication & session endpoints' },
     { name: 'groups', description: 'Group lifecycle & invites' },
+    { name: 'accounts', description: 'Account ingestion & listing (stub)' },
+    { name: 'transactions', description: 'Transaction sync (stub)' },
+    { name: 'budget', description: 'Budget categories, periods, and allocations' },
   ],
   paths: {
     '/auth/register': {
@@ -122,6 +125,266 @@ export const openApiSpec = {
         },
       },
     },
+    '/accounts/sync': {
+      post: {
+        operationId: 'accountsSync',
+        summary: 'Sync accounts from provider',
+        description: 'Ingests accounts from linked provider access token and stores/returns list.',
+        tags: ['accounts'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['accessToken'],
+                properties: { accessToken: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Accounts synced',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['accounts'],
+                  properties: {
+                    accounts: { type: 'array', items: { $ref: '#/components/schemas/Account' } },
+                  },
+                },
+              },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/transactions/sync': {
+      post: {
+        operationId: 'transactionsSync',
+        summary: 'Full transaction sync',
+        description: 'Performs a full (paged) provider sync of transactions (mock access token).',
+        tags: ['transactions'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': {
+            description: 'Sync result counts',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['added', 'modified', 'removed'],
+                  properties: {
+                    added: { type: 'integer' },
+                    modified: { type: 'integer' },
+                    removed: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/transactions': {
+      get: {
+        operationId: 'listTransactions',
+        summary: 'List transactions',
+        description: 'Lists transactions for an account with basic pagination and filters.',
+        tags: ['transactions'],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'accountId', in: 'query', required: true, schema: { type: 'string' } },
+          {
+            name: 'limit',
+            in: 'query',
+            required: false,
+            schema: { type: 'integer', minimum: 1, maximum: 100 },
+          },
+          { name: 'cursor', in: 'query', required: false, schema: { type: 'string' } },
+          { name: 'minAmount', in: 'query', required: false, schema: { type: 'integer' } },
+          { name: 'maxAmount', in: 'query', required: false, schema: { type: 'integer' } },
+          { name: 'category', in: 'query', required: false, schema: { type: 'string' } },
+        ],
+        responses: {
+          '200': {
+            description: 'Transaction page',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['items'],
+                  properties: {
+                    items: { type: 'array', items: { $ref: '#/components/schemas/Transaction' } },
+                    nextCursor: { type: 'string', nullable: true },
+                  },
+                },
+              },
+            },
+          },
+          '400': { description: 'Invalid parameters' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/transactions/{id}/category': {
+      patch: {
+        operationId: 'setTransactionCategory',
+        summary: 'Set manual category',
+        description:
+          'Sets or overrides the primary category for a transaction (simple single category string).',
+        tags: ['transactions'],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+          {
+            name: 'accountId',
+            in: 'query',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Owning account id (temporary until lookup logic implemented).',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['category'],
+                properties: { category: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Updated transaction',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['transaction'],
+                  properties: { transaction: { $ref: '#/components/schemas/Transaction' } },
+                },
+              },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+          '404': { description: 'Not found' },
+        },
+      },
+    },
+    '/budget/categories': {
+      post: {
+        operationId: 'createBudgetCategory',
+        summary: 'Create budget category',
+        tags: ['budget'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreateCategoryRequest' } },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'Created',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateCategoryResponse' },
+              },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/budget/periods': {
+      post: {
+        operationId: 'createBudgetPeriod',
+        summary: 'Create budget period',
+        tags: ['budget'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreatePeriodRequest' } },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'Created',
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/CreatePeriodResponse' } },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/budget/allocations': {
+      post: {
+        operationId: 'createBudgetAllocation',
+        summary: 'Create budget allocation',
+        tags: ['budget'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/CreateAllocationRequest' },
+            },
+          },
+        },
+        responses: {
+          '201': {
+            description: 'Created',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/CreateAllocationResponse' },
+              },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/budget/periods/{id}/summary': {
+      get: {
+        operationId: 'getBudgetPeriodSummary',
+        summary: 'Get budget period summary',
+        tags: ['budget'],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'groupId', in: 'query', required: true, schema: { type: 'string' } },
+        ],
+        responses: {
+          '200': {
+            description: 'Summary',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/BudgetPeriodSummaryResponse' },
+              },
+            },
+          },
+          '400': { description: 'Invalid input' },
+          '401': { description: 'Unauthorized' },
+          '404': { description: 'Not found' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
@@ -193,6 +456,159 @@ export const openApiSpec = {
               createdAt: { type: 'string', format: 'date-time' },
               expiresAt: { type: 'string', format: 'date-time' },
               acceptedAt: { type: 'string', nullable: true },
+            },
+          },
+        },
+      },
+      Account: {
+        type: 'object',
+        required: ['id', 'groupId', 'providerType', 'name'],
+        properties: {
+          id: { type: 'string' },
+          groupId: { type: 'string' },
+          providerType: { type: 'string' },
+          name: { type: 'string' },
+          institutionName: { type: 'string', nullable: true },
+          type: { type: 'string', nullable: true },
+          subtype: { type: 'string', nullable: true },
+          currentBalance: { type: 'number', nullable: true },
+          currency: { type: 'string', nullable: true },
+          lastSyncedAt: { type: 'string', format: 'date-time', nullable: true },
+        },
+      },
+      Transaction: {
+        type: 'object',
+        required: ['id', 'accountId', 'postedAt', 'description', 'amount', 'currency', 'pending'],
+        properties: {
+          id: { type: 'string' },
+          accountId: { type: 'string' },
+          postedAt: { type: 'string' },
+          description: { type: 'string' },
+          amount: { type: 'integer' },
+          currency: { type: 'string' },
+          pending: { type: 'boolean' },
+          category: { type: 'array', items: { type: 'string' }, nullable: true },
+          modifiedAt: { type: 'string', format: 'date-time', nullable: true },
+          removed: { type: 'boolean', nullable: true },
+        },
+      },
+      CreateCategoryRequest: {
+        type: 'object',
+        required: ['groupId', 'name'],
+        properties: { groupId: { type: 'string' }, name: { type: 'string', minLength: 1 } },
+      },
+      Category: {
+        type: 'object',
+        required: ['id', 'groupId', 'name', 'createdAt'],
+        properties: {
+          id: { type: 'string' },
+          groupId: { type: 'string' },
+          name: { type: 'string' },
+          createdAt: { type: 'string', format: 'date-time' },
+          archivedAt: { type: 'string', format: 'date-time', nullable: true },
+        },
+      },
+      CreateCategoryResponse: {
+        type: 'object',
+        required: ['category'],
+        properties: { category: { $ref: '#/components/schemas/Category' } },
+      },
+      CreatePeriodRequest: {
+        type: 'object',
+        required: ['groupId', 'startDate'],
+        properties: {
+          groupId: { type: 'string' },
+          startDate: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        },
+      },
+      BudgetPeriod: {
+        type: 'object',
+        required: ['id', 'groupId', 'startDate', 'type', 'createdAt'],
+        properties: {
+          id: { type: 'string' },
+          groupId: { type: 'string' },
+          startDate: { type: 'string' },
+          type: { type: 'string', enum: ['MONTH'] },
+          createdAt: { type: 'string', format: 'date-time' },
+        },
+      },
+      CreatePeriodResponse: {
+        type: 'object',
+        required: ['period'],
+        properties: { period: { $ref: '#/components/schemas/BudgetPeriod' } },
+      },
+      CreateAllocationRequest: {
+        type: 'object',
+        required: ['periodId', 'categoryId', 'amount', 'currency'],
+        properties: {
+          periodId: { type: 'string' },
+          categoryId: { type: 'string' },
+          amount: { type: 'integer', minimum: 0 },
+          currency: { type: 'string', minLength: 3, maxLength: 3 },
+        },
+      },
+      Allocation: {
+        type: 'object',
+        required: ['id', 'periodId', 'categoryId', 'amount', 'currency', 'createdAt'],
+        properties: {
+          id: { type: 'string' },
+          periodId: { type: 'string' },
+          categoryId: { type: 'string' },
+          amount: { type: 'integer' },
+          currency: { type: 'string' },
+          createdAt: { type: 'string', format: 'date-time' },
+          modifiedAt: { type: 'string', format: 'date-time', nullable: true },
+        },
+      },
+      CreateAllocationResponse: {
+        type: 'object',
+        required: ['allocation'],
+        properties: { allocation: { $ref: '#/components/schemas/Allocation' } },
+      },
+      BudgetPeriodSummaryResponse: {
+        type: 'object',
+        required: ['summary'],
+        properties: {
+          summary: {
+            type: 'object',
+            required: ['periodId', 'groupId', 'startDate', 'type', 'categories', 'totals'],
+            properties: {
+              periodId: { type: 'string' },
+              groupId: { type: 'string' },
+              startDate: { type: 'string' },
+              type: { type: 'string', enum: ['MONTH'] },
+              categories: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'categoryId',
+                    'name',
+                    'allocationMinorUnits',
+                    'spentMinorUnits',
+                    'remainingMinorUnits',
+                    'currency',
+                  ],
+                  properties: {
+                    categoryId: { type: 'string' },
+                    name: { type: 'string' },
+                    allocationMinorUnits: { type: 'integer' },
+                    spentMinorUnits: { type: 'integer' },
+                    remainingMinorUnits: { type: 'integer' },
+                    currency: { type: 'string' },
+                  },
+                },
+              },
+              totals: {
+                type: 'object',
+                required: ['allocated', 'spent', 'remaining', 'currency'],
+                properties: {
+                  allocated: { type: 'integer' },
+                  spent: { type: 'integer' },
+                  remaining: { type: 'integer' },
+                  currency: { type: 'string' },
+                },
+              },
             },
           },
         },

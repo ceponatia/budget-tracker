@@ -1,0 +1,21 @@
+{
+  "name": "@budget/accounts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@budget/domain": "workspace:*",
+    "@budget/provider": "workspace:*",
+    "@budget/vault": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "vitest": "^1.6.1"
+  }
+}
