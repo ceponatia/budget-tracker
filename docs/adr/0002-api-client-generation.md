@@ -1,7 +1,7 @@
 # ADR 0002: API Client Generation Strategy (Flutter & TypeScript)
 
 Date: 2025-08-25
-Status: Proposed
+Status: Accepted (2025-08-25)
 
 Decision Drivers:
 
@@ -104,7 +104,7 @@ Cons:
 | CI Automation Ease           | Moderate                  | Easy (but drift risk)    | Moderate                | Complex             | Easy       |
 | Onboarding Simplicity        | Moderate                  | Strong                   | Moderate                | Weak                | Weak       |
 
-## Decision (Proposed)
+## Decision
 
 Adopt Option A: `openapi-typescript` for TypeScript type generation + custom zod validating fetch wrapper, and `openapi-generator` (dart-dio-next) for Flutter.
 
@@ -150,4 +150,15 @@ Reconsider if:
 
 ## Status
 
-Proposed; pending review and acceptance.
+Accepted; implementation kickoff scheduled. Tracking checklist:
+
+- [ ] Add dev dependency `openapi-typescript` & generation script (gen-api-ts) (Task: REF-API-001)
+- [ ] Create TS client wrapper with zod validation (REF-API-002)
+- [ ] Add Docker-based dart generation script (REF-API-003)
+- [ ] Wire CI job to run generation & fail on diff (REF-API-004)
+- [ ] Documentation update in developer guide (REF-API-005)
+
+Future enhancement candidates:
+
+- Template shared error envelope across TS/Dart clients.
+- Evaluate pruning unused TS operation types post-tree-shake metrics.

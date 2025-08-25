@@ -88,18 +88,49 @@ codecentric.de
 
 Conflict Resolution: In the rare cases of conflicting edits (e.g., user edits a budget offline while another family member edits the same budget online), the system will need to handle reconciliation. Our approach will be to timestamp every change and, if a conflict is detected on sync, prefer the latest change but log the conflict. We can also notify the user of any overwritten data. For simplicity, conflicts may be few (since family members likely won’t edit the exact same item simultaneously often), but we will account for it in design.
 
-4. Cross-Platform Desktop Application
+4. Cross-Platform Application (Electron → Flutter Refactor)
 
 Unified Desktop Experience: Develop a desktop client that runs on Windows 11, macOS, and Linux (Debian-based). We aim to reuse as much code as possible across these platforms to maintain feature parity and reduce development effort. The desktop app will essentially load the same front-end interface as the web app, but packaged as a native application for convenience and offline support.
 
-Electron Framework (Proposed): The leading approach is to use Electron to create the desktop applications. Electron allows us to build cross-platform desktop apps using JavaScript/HTML/CSS, essentially bundling a Chromium browser and Node.js runtime
+Electron Framework (Initial Approach – Being Replaced): The original implementation leveraged Electron to create the desktop applications, using a shared React SPA packaged with a Chromium shell. This remains in the main branch for historical context and will continue to function until the Flutter migration reaches feature parity.
+
+Flutter Multi‑Platform Refactor (Active – Branch `flutter-refactor`): As of Aug 2025 we initiated a refactor to adopt Flutter/Dart for the primary cross‑platform UI (desktop + mobile + optional web) to consolidate future mobile ambitions and reduce memory footprint versus Electron. Flutter provides:
+
+- Single UI codebase across desktop (macOS/Linux/Windows), mobile, and web.
+- Rich performance (Skia rendering) and lower idle resource usage compared to Electron.
+- Strong tooling for declarative UI, theming, and accessibility.
+- Opportunity to unify offline cache strategy (e.g. using `isar` or `drift`) with predictable isolates.
+
+Transition Strategy:
+
+1. Scaffold Flutter app (DONE – minimal shell committed under `apps/flutter_app`).
+2. Introduce generated API clients (ADR 0002 accepted) to mirror existing REST contract.
+3. Implement auth flow + secure token storage (precedes replacing Electron login).
+4. Port accounts / transactions views incrementally; run side-by-side during migration.
+5. Migrate budgeting UI & reporting modules; validate parity with existing React components.
+6. Implement offline cache & sync queue in Flutter (align with future Phase 3 tasks, may pull select SYNC tasks earlier for mobile readiness).
+7. Decommission Electron shell once Flutter desktop reaches agreed parity milestone (target: post Phase 2 core ingestion completion).
+
+Impact on Tasks:
+
+- Existing Phase 1 tasks remain historical (complete).
+- Phase 2 front-end tasks (e.g., T-024, T-029, T-031, T-035) will have Flutter counterparts tracked with temporary REF-FE task IDs or mapped directly by amending acceptance criteria to include Flutter implementation.
+- A lightweight task extension document (proposed `docs/tasks-refactor.md`) may be added if inline edits to `tasks.md` would introduce confusion; decision pending after first Flutter feature lands.
+
+Risk & Mitigation:
+
+- Dual UI surfaces (Electron + Flutter) → Limit overlapping development window; define clear cutover criteria.
+- API drift during port → Enforce ADR 0002 generation diff check in CI.
+- Team ramp-up on Dart → Provide internal quick-start guide & shared patterns (state mgmt via Provider/riverpod, error handling, logging parity).
+
+Retaining Electron temporarily ensures existing workflows remain stable while validating Flutter performance and offline strategy. A post-cutover cleanup task list will remove Electron-specific build tooling and documentation.
 electronjs.org
 . Many popular apps (Slack, VS Code, etc.) use Electron. By using a web technology stack (e.g. React for UI), we can develop the app once and distribute it on all three OSes. Rationale: The codecentric team in a similar project chose React + Electron specifically because it allowed rapid development and reusability, achieving offline capability and multi-OS support with a single codebase
 codecentric.de
 codecentric.de
 . We anticipate the same benefits: a rich ecosystem of NPM packages for features and a unified development effort.
 
-Alternative Frameworks Considered: We will evaluate alternatives like Progressive Web Apps (PWA) or other cross-platform frameworks (e.g. Flutter or .NET MAUI). A PWA could allow installation via browser on desktop and offline caching via service workers
+Alternative Frameworks Considered (Historical): Prior evaluation included PWA, Flutter, .NET MAUI. That evaluation initially favored Electron. The project has since formally selected Flutter (see refactor section above); Electron rationale kept for archival comparison.
 web.dev
 web.dev
 ; however, PWAs on desktop may have limitations (Safari on macOS does not support installable PWAs, for example
@@ -116,7 +147,7 @@ codecentric.de
 
 Auto-Update: The desktop app will include an auto-updater mechanism to deploy new features and security fixes. Electron has auto-update support, or we can integrate a service (like Squirrel for Windows, AppImageUpdate for Linux, Sparkle for Mac if not using Electron’s built-in). Auto-updates will be code-signed and delivered over HTTPS. This ensures users stay on the latest version without manual reinstalls.
 
-5. Cloud Backend and Web Application
+Section 5: Cloud Backend and Web Application
 
 Web Application (Cloud Backend): The core of the system is a cloud-hosted web application that provides RESTful (or GraphQL) APIs for all functionalities (user management, transactions, budgets, etc.) and hosts the web frontend for browser users. All data and business logic reside on the server to maintain a single source of truth and simplify compliance (e.g. easier to secure data on known servers). The desktop apps are essentially clients that communicate with this backend via internet (when online).
 
@@ -138,7 +169,7 @@ Web Frontend: Users should also be able to access their budget via a web browser
 
 Routing and Data Hosting: As stated, the “web application hosts all data and routing.” Concretely, that means all permanent data lives in the cloud database, and page navigation (routing) can be handled either by the single-page app (client-side routes in React) or via server-side if needed for SEO (though SEO is not critical for an app behind login). The desktop app will not have its own separate database (beyond the local cache) or independent routing – it will essentially load the React app in a window. Any attempt to navigate or fetch data will go to the cloud (if online) or use local data (if offline), keeping the logic centralized.
 
-6. Security and Privacy Features
+Section 6: Security and Privacy Features
 
 User Authentication: Implement a secure authentication system for users to sign up and log in. Likely this will be email/password based login initially (with passwords hashed with a strong algorithm like bcrypt on the server). We will also allow OAuth login through providers like Google for convenience (optional). Given the sensitivity of financial data, we will offer Multi-Factor Authentication (MFA), such as an option to enable an authenticator app or SMS code during login for an extra layer of security.
 
